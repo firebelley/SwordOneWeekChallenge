@@ -122,11 +122,12 @@ namespace Game.GameObject
 
         private void StateDash()
         {
-            var result = GetTree().Root.World2d.DirectSpaceState.Raycast(previousPosition, GlobalPosition, null, 1 << 0, true, false);
+            var result = GetTree().Root.World2d.DirectSpaceState.Raycast(previousPosition, tip.GlobalPosition, null, 1 << 0, true, false);
             if (result != null)
             {
-                var offset = tip.GlobalPosition - previousPosition;
+                var offset = tip.GlobalPosition - GlobalPosition;
                 GlobalPosition = result.Position - offset;
+                LinearVelocity = Vector2.Zero;
                 stateMachine.ChangeState(StateNormal);
             }
 
