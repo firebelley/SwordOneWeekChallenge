@@ -1,3 +1,4 @@
+using Game.Component;
 using Godot;
 using GodotUtilities;
 using GodotUtilities.Logic;
@@ -25,10 +26,13 @@ namespace Game.GameObject
         private Sprite sprite;
         [Node]
         private AnimatedSprite animatedSprite;
+        [Node]
+        private ResourcePreloader resourcePreloader;
 
         private const float LAUNCH_FORCE = 300f;
         private const int TORQUE_COEFFICIENT = 200_000;
         private const float DASH_FORCE = 1500f;
+        private const float ATTACK_FORCE = 100f;
         private const float DASH_LINEAR_DAMP = 8f;
 
         public override void _Notification(int what)
@@ -69,6 +73,7 @@ namespace Game.GameObject
 
         public override void _Ready()
         {
+            AddToGroup(nameof(Sword));
             stateMachine.AddState(State.Normal, StateNormal);
             stateMachine.AddEnterState(State.Dash, EnterStateDash);
             stateMachine.AddState(State.Dash, StateDash);
@@ -100,8 +105,8 @@ namespace Game.GameObject
 
         private void EnterStateDash()
         {
-            ApplyCentralImpulse(this.GetMouseDirection() * DASH_FORCE);
             dashTimer.Start();
+            ApplyCentralImpulse(this.GetMouseDirection() * DASH_FORCE);
             EmitSignal(nameof(DashTimerStarted), dashTimer.WaitTime);
 
             GravityScale = 0;
@@ -126,17 +131,18 @@ namespace Game.GameObject
 
         private void EnterStateAttack()
         {
-            GravityScale = 0;
             attackTimer.Start();
-            LinearVelocity = this.GetMouseDirection() * 50f;
+            GravityScale = 0;
+            LinearVelocity = Vector2.Zero;
+            ApplyCentralImpulse(this.GetMouseDirection() * ATTACK_FORCE);
             AppliedTorque = 0f;
-            // Rotation = this.GetMouseDirection().Angle();
+            Rotation = this.GetMouseDirection().Angle();
 
             if (IsInstanceValid(currentAttackTween))
             {
                 currentAttackTween.Kill();
             }
-            var angleMod = GetGlobalMousePosition().x < GlobalPosition.x ? -1 : 1;
+            // var angleMod = GetGlobalMousePosition().x < GlobalPosition.x ? -1 : 1;
             // sprite.Rotation = Mathf.Deg2Rad(-75f * angleMod);
             // currentAttackTween = GetTree().CreateTween();
             // currentAttackTween.TweenProperty(sprite, "rotation_degrees", 75f * angleMod, attackTimer.WaitTime / 2f).SetEase(Tween.EaseType.InOut).SetTrans(Tween.TransitionType.Sine);
@@ -146,6 +152,11 @@ namespace Game.GameObject
             animatedSprite.Visible = true;
             animatedSprite.Play("attack_1");
             animatedSprite.Frame = 0;
+
+            var hitbox = resourcePreloader.InstanceSceneOrNull<HitboxComponent>("SwordHitbox");
+            GetParent().AddChild(hitbox);
+            hitbox.GlobalPosition = GlobalPosition;
+            hitbox.Rotation = this.GetMouseDirection().Angle();
         }
 
         private void StateAttack()

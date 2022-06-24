@@ -70,13 +70,22 @@ attack={
  ]
 }
 
+[layer_names]
+
+2d_physics/layer_1="TERRAIN"
+2d_physics/layer_2="PLAYER"
+2d_physics/layer_3="ENEMY"
+
 [mono]
 
 project/auto_update_project=false
 
 [physics]
 
+common/physics_jitter_fix=0.0
 2d/default_gravity=400
+2d/default_linear_damp=0.0
+2d/default_angular_damp=0.0
 common/physics_interpolation=true
 
 [rendering]

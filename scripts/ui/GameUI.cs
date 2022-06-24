@@ -2,7 +2,7 @@ using Game.GameObject;
 using Godot;
 using GodotUtilities;
 
-namespace Game
+namespace Game.UI
 {
     public class GameUI : CanvasLayer
     {
