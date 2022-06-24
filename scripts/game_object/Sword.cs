@@ -28,6 +28,10 @@ namespace Game.GameObject
         private AnimatedSprite animatedSprite;
         [Node]
         private ResourcePreloader resourcePreloader;
+        [Node]
+        private Position2D tip;
+
+        private Vector2 previousPosition;
 
         private const float LAUNCH_FORCE = 300f;
         private const int TORQUE_COEFFICIENT = 200_000;
@@ -91,6 +95,7 @@ namespace Game.GameObject
             stateMachine.Update();
             sprite.FlipV = !((RotationDegrees is > -90 and < 0) || (RotationDegrees is < 90 and > 0));
             animatedSprite.FlipV = sprite.FlipV;
+            previousPosition = GlobalPosition;
         }
 
         private void StateNormal()
@@ -117,6 +122,14 @@ namespace Game.GameObject
 
         private void StateDash()
         {
+            var result = GetTree().Root.World2d.DirectSpaceState.Raycast(previousPosition, GlobalPosition, null, 1 << 0, true, false);
+            if (result != null)
+            {
+                var offset = tip.GlobalPosition - previousPosition;
+                GlobalPosition = result.Position - offset;
+                stateMachine.ChangeState(StateNormal);
+            }
+
             if (dashTimer.TimeLeft < .75f)
             {
                 stateMachine.ChangeState(StateNormal);
@@ -142,11 +155,6 @@ namespace Game.GameObject
             {
                 currentAttackTween.Kill();
             }
-            // var angleMod = GetGlobalMousePosition().x < GlobalPosition.x ? -1 : 1;
-            // sprite.Rotation = Mathf.Deg2Rad(-75f * angleMod);
-            // currentAttackTween = GetTree().CreateTween();
-            // currentAttackTween.TweenProperty(sprite, "rotation_degrees", 75f * angleMod, attackTimer.WaitTime / 2f).SetEase(Tween.EaseType.InOut).SetTrans(Tween.TransitionType.Sine);
-            // currentAttackTween.TweenProperty(sprite, "rotation_degrees", 0f, .3f).SetEase(Tween.EaseType.InOut).SetTrans(Tween.TransitionType.Sine);
 
             sprite.Visible = false;
             animatedSprite.Visible = true;
