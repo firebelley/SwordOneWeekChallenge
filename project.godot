@@ -14,18 +14,30 @@ config/name="SwordGame"
 run/main_scene="res://scenes/Main.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Visuals="*res://scripts/autoload/Visuals.cs"
+HitstopManager="*res://scripts/autoload/HitstopManager.cs"
+IntegerResolutionHandler="*res://addons/integer_resolution_handler/integer_resolution_handler.gd"
+
 [debug]
 
 settings/fps/force_fps=240
 
 [display]
 
+window/integer_resolution_handler/base_width=640
+window/integer_resolution_handler/base_height=360
 window/size/width=640
 window/size/height=360
 window/size/test_width=1920
 window/size/test_height=1080
 window/stretch/mode="viewport"
 window/stretch/aspect="expand"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/integer_resolution_handler/plugin.cfg" )
 
 [importer_defaults]
 

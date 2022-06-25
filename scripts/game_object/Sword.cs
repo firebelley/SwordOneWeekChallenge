@@ -15,6 +15,8 @@ namespace Game.GameObject
         public delegate void LaunchTimerStopped();
         [Signal]
         public delegate void DashTimerStopped();
+        [Signal]
+        public delegate void EnemyHit();
 
         [Node]
         private Timer launchTimer;
@@ -102,9 +104,6 @@ namespace Game.GameObject
 
             hurtboxComponent.Connect(nameof(HurtboxComponent.Hit), this, nameof(OnHit));
             attackResetTimer.Connect("timeout", this, nameof(OnAttackResetTimeout));
-            animatedSpriteAttack1.Connect("animation_finished", this, nameof(OnAttackAnimationFinished));
-            animatedSpriteAttack2.Connect("animation_finished", this, nameof(OnAttackAnimationFinished));
-            animatedSpriteAttack3.Connect("animation_finished", this, nameof(OnAttackAnimationFinished));
         }
 
         public override void _PhysicsProcess(float delta)
@@ -278,11 +277,6 @@ namespace Game.GameObject
             }
         }
 
-        private void ResetTimeScale()
-        {
-            GetTree().Paused = false;
-        }
-
         private void OnHit(HitboxComponent hitbox)
         {
             GD.Print("hit");
@@ -293,22 +287,12 @@ namespace Game.GameObject
             var swordHit = resourcePreloader.InstanceSceneOrNull<SwordHit>();
             GetParent().AddChild(swordHit);
             swordHit.GlobalPosition = hurtboxComponent.GlobalPosition;
-            // TODO: move this out of sword, perhaps to autoload
-            GetTree().Paused = true;
-            GetTree().CreateTimer(.06f, true).Connect("timeout", this, nameof(ResetTimeScale));
+            EmitSignal(nameof(EnemyHit));
         }
 
         private void OnAttackResetTimeout()
         {
             attackChain = 0;
-        }
-
-        private void OnAttackAnimationFinished()
-        {
-            // if (stateMachine.GetCurrentState() == State.Attack)
-            // {
-            //     stateMachine.ChangeState(StateNormal);
-            // }
         }
     }
 }

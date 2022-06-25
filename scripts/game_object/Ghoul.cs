@@ -126,7 +126,7 @@ namespace Game.GameObject
         {
             attackChargeTimer.Start();
             var attackCharge = resourcePreloader.InstanceSceneOrNull<AttackCharge>();
-            GetParent().AddChild(attackCharge);
+            AddChild(attackCharge);
             attackCharge.GlobalPosition = GlobalPosition;
             attackCharge.SetDuration(1f / attackChargeTimer.WaitTime);
         }
@@ -134,7 +134,6 @@ namespace Game.GameObject
         private void StateAttackCharge()
         {
             PlayShakeAnimation();
-            // TODO: do some sort of particle and shake here
             if (attackChargeTimer.IsStopped())
             {
                 stateMachine.ChangeState(StateAttack);
