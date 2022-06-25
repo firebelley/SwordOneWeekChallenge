@@ -113,7 +113,7 @@ one_shot = true
 
 [node name="AttackResetTimer" type="Timer" parent="."]
 process_mode = 0
-wait_time = 0.5
+wait_time = 0.75
 one_shot = true
 
 [node name="Tip" type="Position2D" parent="."]

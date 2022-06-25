@@ -17,7 +17,7 @@ namespace Game.Effect
 
         public override void _Ready()
         {
-            velocity = Vector2.Right.Rotated(-MathUtil.RNG.RandfRange(Mathf.Deg2Rad(45f), Mathf.Deg2Rad(180 - 45))) * MathUtil.RNG.RandfRange(300f, 500f);
+            velocity = Vector2.Right.Rotated(-MathUtil.RNG.RandfRange(Mathf.Deg2Rad(45f), Mathf.Deg2Rad(180 - 45))) * MathUtil.RNG.RandfRange(200f, 400f);
         }
 
         public override void _PhysicsProcess(float delta)
