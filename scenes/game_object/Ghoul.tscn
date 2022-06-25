@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://assets/art/ghoul.png" type="Texture" id=1]
 [ext_resource path="res://scripts/game_object/Ghoul.cs" type="Script" id=2]
@@ -7,6 +7,8 @@
 [ext_resource path="res://scenes/component/BlackboardComponent.tscn" type="PackedScene" id=5]
 [ext_resource path="res://scenes/game_object/Projectile.tscn" type="PackedScene" id=6]
 [ext_resource path="res://scenes/effect/AttackCharge.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/effect/EnemyDeath.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scenes/effect/EnemyDeathExplosion.tscn" type="PackedScene" id=9]
 
 [sub_resource type="Animation" id=3]
 length = 0.001
@@ -24,7 +26,7 @@ tracks/0/keys = {
 }
 
 [sub_resource type="Animation" id=4]
-resource_name = "attack_charge"
+resource_name = "shake"
 step = 0.25
 tracks/0/type = "value"
 tracks/0/path = NodePath("Sprite:position")
@@ -50,10 +52,10 @@ script = ExtResource( 2 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/RESET = SubResource( 3 )
-anims/attack_charge = SubResource( 4 )
+anims/shake = SubResource( 4 )
 
 [node name="ResourcePreloader" type="ResourcePreloader" parent="."]
-resources = [ PoolStringArray( "AttackCharge", "Projectile" ), [ ExtResource( 7 ), ExtResource( 6 ) ] ]
+resources = [ PoolStringArray( "AttackCharge", "EnemyDeath", "EnemyDeathExplosion", "Projectile" ), [ ExtResource( 7 ), ExtResource( 8 ), ExtResource( 9 ), ExtResource( 6 ) ] ]
 
 [node name="PathfindTimer" type="Timer" parent="."]
 process_mode = 0
@@ -66,6 +68,10 @@ wait_time = 0.75
 one_shot = true
 
 [node name="AttackCooldownTimer" type="Timer" parent="."]
+process_mode = 0
+one_shot = true
+
+[node name="DeathTimer" type="Timer" parent="."]
 process_mode = 0
 one_shot = true
 
@@ -91,5 +97,6 @@ shape = SubResource( 2 )
 
 [node name="HurtboxComponent" parent="." instance=ExtResource( 3 )]
 
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="HurtboxComponent"]
+[node name="HurtboxShape" type="CollisionShape2D" parent="HurtboxComponent"]
+unique_name_in_owner = true
 shape = SubResource( 1 )

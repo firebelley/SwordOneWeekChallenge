@@ -32,13 +32,18 @@ namespace Game.GameObject
         private HealthComponent healthComponent;
         [Node]
         private AnimationPlayer animationPlayer;
+        [Node("%HurtboxShape")]
+        private CollisionShape2D hurtboxShape;
+        [Node]
+        private Timer deathTimer;
 
         private enum State
         {
             Normal,
             Knockback,
             AttackCharge,
-            Attack
+            Attack,
+            Death
         }
         private StateMachine<State> stateMachine = new();
 
@@ -62,6 +67,8 @@ namespace Game.GameObject
             stateMachine.AddEnterState(State.Attack, EnterStateAttack);
             stateMachine.AddState(State.Attack, StateAttack);
             stateMachine.AddLeaveState(State.Attack, LeaveStateAttack);
+            stateMachine.AddEnterState(State.Death, EnterStateDeath);
+            stateMachine.AddState(State.Death, StateDeath);
             stateMachine.SetInitialState(State.Normal);
 
             navigationAgent2D.Connect("velocity_computed", this, nameof(OnVelocityComputed));
@@ -72,6 +79,7 @@ namespace Game.GameObject
         public override void _PhysicsProcess(float delta)
         {
             stateMachine.Update();
+            velocity = MoveAndSlide(velocity);
         }
 
         private void StateNormal()
@@ -96,7 +104,6 @@ namespace Game.GameObject
 
             AccelerateToVelocity(desiredVelocity, ACCELERATION_COEFFICIENT);
             navigationAgent2D.SetVelocity(velocity);
-            velocity = MoveAndSlide(velocity);
         }
 
         private void EnterStateKnockback()
@@ -107,7 +114,6 @@ namespace Game.GameObject
         private void StateKnockback()
         {
             AccelerateToVelocity(Vector2.Zero, KNOCKBACK_COEFFICIENT);
-            velocity = MoveAndSlide(velocity);
             if (velocity.LengthSquared() < 10)
             {
                 stateMachine.ChangeState(StateNormal);
@@ -125,11 +131,7 @@ namespace Game.GameObject
 
         private void StateAttackCharge()
         {
-            if (animationPlayer.CurrentAnimation != "attack_charge" || !animationPlayer.IsPlaying())
-            {
-                animationPlayer.PlaybackSpeed = 1f / .1f;
-                animationPlayer.Play("attack_charge");
-            }
+            PlayShakeAnimation();
             // TODO: do some sort of particle and shake here
             if (attackChargeTimer.IsStopped())
             {
@@ -165,6 +167,27 @@ namespace Game.GameObject
             attackCooldownTimer.Start();
         }
 
+        private void EnterStateDeath()
+        {
+            deathTimer.Start();
+            hurtboxShape.Disabled = true;
+            var node = resourcePreloader.InstanceSceneOrNull<Node2D>("EnemyDeath");
+            AddChild(node);
+        }
+
+        private void StateDeath()
+        {
+            PlayShakeAnimation();
+            AccelerateToVelocity(Vector2.Zero, ACCELERATION_COEFFICIENT);
+            if (deathTimer.IsStopped())
+            {
+                var node = resourcePreloader.InstanceSceneOrNull<Node2D>("EnemyDeathExplosion");
+                GetParent().AddChild(node);
+                node.GlobalPosition = GlobalPosition;
+                QueueFree();
+            }
+        }
+
         private void AccelerateToVelocity(Vector2 toVelocity, float coefficient)
         {
             velocity = velocity.LinearInterpolate(toVelocity, Mathf.Exp(-coefficient * GetPhysicsProcessDeltaTime()));
@@ -179,6 +202,15 @@ namespace Game.GameObject
             }
             var raycast = GetTree().Root.World2d.DirectSpaceState.Raycast(GlobalPosition, playerPos.Value, null, 1 << 0, true, false);
             return raycast == null;
+        }
+
+        private void PlayShakeAnimation()
+        {
+            if (animationPlayer.CurrentAnimation != "shake" || !animationPlayer.IsPlaying())
+            {
+                animationPlayer.PlaybackSpeed = 1f / .1f;
+                animationPlayer.Play("shake");
+            }
         }
 
         private void OnVelocityComputed(Vector2 vel)
@@ -198,7 +230,7 @@ namespace Game.GameObject
 
         private void OnDied()
         {
-            QueueFree();
+            stateMachine.ChangeState(StateDeath);
         }
 
         private static class Constants
