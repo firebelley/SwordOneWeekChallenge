@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://assets/art/particles.png" type="Texture" id=1]
+[ext_resource path="res://assets/art/effect/particles.png" type="Texture" id=1]
 [ext_resource path="res://scripts/effect/MagmaEffect.cs" type="Script" id=2]
 
 [sub_resource type="CanvasItemMaterial" id=8]
@@ -36,6 +36,8 @@ scale = 0.5
 scale_random = 1.0
 scale_curve = SubResource( 4 )
 color_ramp = SubResource( 6 )
+anim_offset = 1.0
+anim_offset_random = 1.0
 
 [sub_resource type="Animation" id=9]
 length = 0.001

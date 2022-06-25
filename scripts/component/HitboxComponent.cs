@@ -5,6 +5,9 @@ namespace Game.Component
 {
     public class HitboxComponent : Area2D
     {
+        [Signal]
+        public delegate void HitHurtbox(HurtboxComponent hurtboxComponent);
+
         [Export]
         private bool oneShot;
 
@@ -18,6 +21,11 @@ namespace Game.Component
             }
         }
 
+        public override void _Ready()
+        {
+            Connect("area_entered", this, nameof(OnAreaEntered));
+        }
+
         public override void _PhysicsProcess(float delta)
         {
             if (shouldFree)
@@ -25,6 +33,14 @@ namespace Game.Component
                 QueueFree();
             }
             shouldFree = oneShot;
+        }
+
+        private void OnAreaEntered(Area2D otherArea)
+        {
+            if (otherArea is HurtboxComponent hurtboxComponent)
+            {
+                EmitSignal(nameof(HitHurtbox), hurtboxComponent);
+            }
         }
     }
 }

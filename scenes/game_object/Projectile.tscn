@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=2]
 
-[ext_resource path="res://assets/art/particles.png" type="Texture" id=1]
+[ext_resource path="res://assets/art/effect/particles.png" type="Texture" id=1]
 [ext_resource path="res://assets/art/magma-ball.png" type="Texture" id=2]
 [ext_resource path="res://scripts/game_object/Projectile.cs" type="Script" id=3]
 [ext_resource path="res://scenes/effect/MagmaEffect.tscn" type="PackedScene" id=4]
@@ -44,6 +44,8 @@ scale = 1.5
 scale_random = 1.0
 scale_curve = SubResource( 4 )
 color_ramp = SubResource( 6 )
+anim_offset = 1.0
+anim_offset_random = 1.0
 
 [sub_resource type="CircleShape2D" id=8]
 radius = 3.0

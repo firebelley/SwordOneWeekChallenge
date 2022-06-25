@@ -170,6 +170,7 @@ namespace Game.GameObject
             GetParent().AddChild(hitbox);
             hitbox.GlobalPosition = GlobalPosition;
             hitbox.Rotation = this.GetMouseDirection().Angle();
+            hitbox.Connect(nameof(HitboxComponent.HitHurtbox), this, nameof(OnHurtboxHit));
         }
 
         private void StateAttack()
@@ -217,6 +218,21 @@ namespace Game.GameObject
         private void OnHit(HitboxComponent hitbox)
         {
             GD.Print("hit");
+        }
+
+        private void OnHurtboxHit(HurtboxComponent hurtboxComponent)
+        {
+            var swordHit = resourcePreloader.InstanceSceneOrNull<SwordHit>();
+            GetParent().AddChild(swordHit);
+            swordHit.GlobalPosition = hurtboxComponent.GlobalPosition;
+            // TODO: move this out of sword, perhaps to autoload
+            GetTree().Paused = true;
+            GetTree().CreateTimer(.05f, true).Connect("timeout", this, nameof(ResetTimeScale));
+        }
+
+        private void ResetTimeScale()
+        {
+            GetTree().Paused = false;
         }
     }
 }

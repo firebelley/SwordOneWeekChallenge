@@ -1,4 +1,5 @@
 using Game.Component;
+using Game.Effect;
 using Godot;
 using GodotUtilities;
 using GodotUtilities.Logic;
@@ -27,6 +28,10 @@ namespace Game.GameObject
         private BlackboardComponent blackboardComponent;
         [Node]
         private ResourcePreloader resourcePreloader;
+        [Node]
+        private HealthComponent healthComponent;
+        [Node]
+        private AnimationPlayer animationPlayer;
 
         private enum State
         {
@@ -60,6 +65,7 @@ namespace Game.GameObject
             stateMachine.SetInitialState(State.Normal);
 
             navigationAgent2D.Connect("velocity_computed", this, nameof(OnVelocityComputed));
+            healthComponent.Connect(nameof(HealthComponent.Died), this, nameof(OnDied));
             hurtboxComponent.Connect(nameof(HurtboxComponent.Hit), this, nameof(OnHit));
         }
 
@@ -111,10 +117,19 @@ namespace Game.GameObject
         private void EnterStateAttackCharge()
         {
             attackChargeTimer.Start();
+            var attackCharge = resourcePreloader.InstanceSceneOrNull<AttackCharge>();
+            GetParent().AddChild(attackCharge);
+            attackCharge.GlobalPosition = GlobalPosition;
+            attackCharge.SetDuration(1f / attackChargeTimer.WaitTime);
         }
 
         private void StateAttackCharge()
         {
+            if (animationPlayer.CurrentAnimation != "attack_charge" || !animationPlayer.IsPlaying())
+            {
+                animationPlayer.PlaybackSpeed = 1f / .1f;
+                animationPlayer.Play("attack_charge");
+            }
             // TODO: do some sort of particle and shake here
             if (attackChargeTimer.IsStopped())
             {
@@ -178,6 +193,12 @@ namespace Game.GameObject
         {
             blackboardComponent.SetValue(Constants.V_KNOCKBACK_DIRECTION, Vector2.Right.Rotated(hitboxComponent.Rotation));
             stateMachine.ChangeState(StateKnockback);
+            healthComponent.Damage(1);
+        }
+
+        private void OnDied()
+        {
+            QueueFree();
         }
 
         private static class Constants
