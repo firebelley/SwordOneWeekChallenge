@@ -101,7 +101,12 @@ one_shot = true
 process_mode = 0
 one_shot = true
 
-[node name="AttackTimer" type="Timer" parent="."]
+[node name="AttackStateTimer" type="Timer" parent="."]
+process_mode = 0
+wait_time = 0.183
+one_shot = true
+
+[node name="AttackIntervalTimer" type="Timer" parent="."]
 process_mode = 0
 wait_time = 0.25
 one_shot = true
@@ -109,6 +114,7 @@ one_shot = true
 [node name="AttackResetTimer" type="Timer" parent="."]
 process_mode = 0
 wait_time = 0.5
+one_shot = true
 
 [node name="Tip" type="Position2D" parent="."]
 position = Vector2( 24, 0 )

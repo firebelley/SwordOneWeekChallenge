@@ -21,7 +21,9 @@ namespace Game.GameObject
         [Node]
         private Timer dashTimer;
         [Node]
-        private Timer attackTimer;
+        private Timer attackIntervalTimer;
+        [Node]
+        private Timer attackStateTimer;
         [Node]
         private Timer attackResetTimer;
         [Node]
@@ -44,8 +46,9 @@ namespace Game.GameObject
         private const float LAUNCH_FORCE = 300f;
         private const int TORQUE_COEFFICIENT = 200_000;
         private const float DASH_FORCE = 1500f;
-        private const float ATTACK_FORCE = 100f;
+        private const float ATTACK_FORCE = 300f;
         private const float DASH_LINEAR_DAMP = 8f;
+        private const float ATTACK_LINEAR_DAMP = 8f;
 
         public override void _Notification(int what)
         {
@@ -95,10 +98,13 @@ namespace Game.GameObject
             animatedSpriteAttack1.Visible = false;
             animatedSpriteAttack2.Visible = false;
 
-            attackTime = attackTimer.WaitTime;
+            attackTime = attackIntervalTimer.WaitTime;
 
             hurtboxComponent.Connect(nameof(HurtboxComponent.Hit), this, nameof(OnHit));
             attackResetTimer.Connect("timeout", this, nameof(OnAttackResetTimeout));
+            animatedSpriteAttack1.Connect("animation_finished", this, nameof(OnAttackAnimationFinished));
+            animatedSpriteAttack2.Connect("animation_finished", this, nameof(OnAttackAnimationFinished));
+            animatedSpriteAttack3.Connect("animation_finished", this, nameof(OnAttackAnimationFinished));
         }
 
         public override void _PhysicsProcess(float delta)
@@ -171,15 +177,17 @@ namespace Game.GameObject
             }
 
             attackResetTimer.Start();
-            attackTimer.WaitTime = attackTime;
+            attackStateTimer.Start();
+            attackIntervalTimer.WaitTime = attackTime;
             if (attackChain == 2)
             {
-                attackTimer.WaitTime = attackTime * 2f;
+                attackIntervalTimer.WaitTime = attackTime * 2f;
             }
-            attackTimer.Start();
+            attackIntervalTimer.Start();
             GravityScale = 0;
             LinearVelocity = Vector2.Zero;
             ApplyCentralImpulse(this.GetMouseDirection() * ATTACK_FORCE);
+            LinearDamp = ATTACK_LINEAR_DAMP;
             AppliedTorque = 0f;
             Rotation = this.GetMouseDirection().Angle();
 
@@ -206,7 +214,7 @@ namespace Game.GameObject
         {
             CheckInsideTerrain();
             ApplyTorqueTowardMouse();
-            if (attackTimer.IsStopped())
+            if (attackStateTimer.IsStopped())
             {
                 stateMachine.ChangeState(StateNormal);
             }
@@ -215,6 +223,7 @@ namespace Game.GameObject
         private void LeaveStateAttack()
         {
             GravityScale = 1f;
+            LinearDamp = 0f;
             sprite.Visible = true;
             animatedSpriteAttack1.Visible = false;
             animatedSpriteAttack2.Visible = false;
@@ -255,7 +264,7 @@ namespace Game.GameObject
 
         private void TryDash()
         {
-            if (stateMachine.GetCurrentState() == State.Normal && dashTimer.IsStopped())
+            if ((stateMachine.GetCurrentState() == State.Normal || stateMachine.GetCurrentState() == State.Attack) && dashTimer.IsStopped())
             {
                 stateMachine.ChangeState(StateDash);
             }
@@ -263,7 +272,7 @@ namespace Game.GameObject
 
         private void TryAttack()
         {
-            if (stateMachine.GetCurrentState() == State.Normal && attackTimer.IsStopped())
+            if ((stateMachine.GetCurrentState() == State.Normal || stateMachine.GetCurrentState() == State.Dash) && attackIntervalTimer.IsStopped())
             {
                 stateMachine.ChangeState(StateAttack);
             }
@@ -292,6 +301,14 @@ namespace Game.GameObject
         private void OnAttackResetTimeout()
         {
             attackChain = 0;
+        }
+
+        private void OnAttackAnimationFinished()
+        {
+            // if (stateMachine.GetCurrentState() == State.Attack)
+            // {
+            //     stateMachine.ChangeState(StateNormal);
+            // }
         }
     }
 }

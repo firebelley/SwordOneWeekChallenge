@@ -24,13 +24,13 @@ tile_data = PoolIntArray( 0, 1, 0, 1, 1, 0, 2, 1, 0, 3, 1, 0, 4, 1, 0, 5, 1, 0, 
 [node name="Ghoul" parent="Navigation2D" instance=ExtResource( 5 )]
 position = Vector2( 279, 150 )
 
-[node name="Sword" parent="Navigation2D" instance=ExtResource( 3 )]
-unique_name_in_owner = true
-position = Vector2( 149, 132 )
-rotation = -0.785398
-
 [node name="Ghoul2" parent="Navigation2D" instance=ExtResource( 5 )]
 position = Vector2( 68, 300 )
 
 [node name="Ghoul3" parent="Navigation2D" instance=ExtResource( 5 )]
 position = Vector2( 258, 320 )
+
+[node name="Sword" parent="." instance=ExtResource( 3 )]
+unique_name_in_owner = true
+position = Vector2( 149, 132 )
+rotation = -0.785398
