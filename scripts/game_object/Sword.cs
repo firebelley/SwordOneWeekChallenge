@@ -23,9 +23,15 @@ namespace Game.GameObject
         [Node]
         private Timer attackTimer;
         [Node]
+        private Timer attackResetTimer;
+        [Node]
         private Sprite sprite;
         [Node]
-        private AnimatedSprite animatedSprite;
+        private AnimatedSprite animatedSpriteAttack1;
+        [Node]
+        private AnimatedSprite animatedSpriteAttack2;
+        [Node]
+        private AnimatedSprite animatedSpriteAttack3;
         [Node]
         private ResourcePreloader resourcePreloader;
         [Node]
@@ -56,7 +62,9 @@ namespace Game.GameObject
             Attack
         }
         private StateMachine<State> stateMachine = new();
-        private SceneTreeTween currentAttackTween;
+
+        private int attackChain;
+        private float attackTime;
 
         public override void _UnhandledInput(InputEvent evt)
         {
@@ -89,16 +97,22 @@ namespace Game.GameObject
             stateMachine.AddLeaveState(State.Attack, LeaveStateAttack);
             stateMachine.SetInitialState(StateNormal);
 
-            animatedSprite.Visible = false;
+            animatedSpriteAttack1.Visible = false;
+            animatedSpriteAttack2.Visible = false;
+
+            attackTime = attackTimer.WaitTime;
 
             hurtboxComponent.Connect(nameof(HurtboxComponent.Hit), this, nameof(OnHit));
+            attackResetTimer.Connect("timeout", this, nameof(OnAttackResetTimeout));
         }
 
         public override void _PhysicsProcess(float delta)
         {
             stateMachine.Update();
             sprite.FlipV = !((RotationDegrees is > -90 and < 0) || (RotationDegrees is < 90 and > 0));
-            animatedSprite.FlipV = sprite.FlipV;
+            animatedSpriteAttack1.FlipV = sprite.FlipV;
+            animatedSpriteAttack2.FlipV = !sprite.FlipV;
+            animatedSpriteAttack3.FlipV = sprite.FlipV;
             previousPosition = GlobalPosition;
         }
 
@@ -141,22 +155,38 @@ namespace Game.GameObject
 
         private void EnterStateAttack()
         {
+            if (attackChain > 2)
+            {
+                attackChain = 0;
+            }
+
+            var animatedSprite = animatedSpriteAttack1;
+            if (attackChain == 1)
+            {
+                animatedSprite = animatedSpriteAttack2;
+            }
+            else if (attackChain == 2)
+            {
+                animatedSprite = animatedSpriteAttack3;
+            }
+            attackChain++;
+
+            attackResetTimer.Start();
+            attackTimer.WaitTime = attackTime;
+            if (attackChain > 2)
+            {
+                attackTimer.WaitTime = attackTime * 2f;
+            }
             attackTimer.Start();
             GravityScale = 0;
             LinearVelocity = Vector2.Zero;
             ApplyCentralImpulse(this.GetMouseDirection() * ATTACK_FORCE);
             AppliedTorque = 0f;
-            // animatedSprite.GlobalRotation = this.GetMouseDirection().Angle();
             Rotation = this.GetMouseDirection().Angle();
-
-            if (IsInstanceValid(currentAttackTween))
-            {
-                currentAttackTween.Kill();
-            }
 
             sprite.Visible = false;
             animatedSprite.Visible = true;
-            animatedSprite.Play("attack_1");
+            animatedSprite.Play("attack");
             animatedSprite.Frame = 0;
 
             var hitbox = resourcePreloader.InstanceSceneOrNull<HitboxComponent>("SwordHitbox");
@@ -180,7 +210,9 @@ namespace Game.GameObject
         {
             GravityScale = 1f;
             sprite.Visible = true;
-            animatedSprite.Visible = false;
+            animatedSpriteAttack1.Visible = false;
+            animatedSpriteAttack2.Visible = false;
+            animatedSpriteAttack3.Visible = false;
         }
 
         private void ApplyTorqueTowardMouse()
@@ -231,6 +263,11 @@ namespace Game.GameObject
             }
         }
 
+        private void ResetTimeScale()
+        {
+            GetTree().Paused = false;
+        }
+
         private void OnHit(HitboxComponent hitbox)
         {
             GD.Print("hit");
@@ -246,9 +283,9 @@ namespace Game.GameObject
             GetTree().CreateTimer(.06f, true).Connect("timeout", this, nameof(ResetTimeScale));
         }
 
-        private void ResetTimeScale()
+        private void OnAttackResetTimeout()
         {
-            GetTree().Paused = false;
+            attackChain = 0;
         }
     }
 }

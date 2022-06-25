@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/sword-attack.png-07d6c57b6122576f339a6e64ce4c5402.stex"
+path="res://.import/sword-attack2.png-18d365541990456c9c92f1e40926f4dd.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/sword-attack.png"
-dest_files=[ "res://.import/sword-attack.png-07d6c57b6122576f339a6e64ce4c5402.stex" ]
+source_file="res://assets/art/attack_2/sword-attack2.png"
+dest_files=[ "res://.import/sword-attack2.png-18d365541990456c9c92f1e40926f4dd.stex" ]
 
 [params]
 
