@@ -104,11 +104,7 @@ namespace Game.GameObject
 
         private void StateNormal()
         {
-            var currentAngle = Vector2.Right.Rotated(Rotation);
-            var desiredAngle = this.GetMouseDirection();
-            var angleTo = currentAngle.AngleTo(desiredAngle);
-            AppliedTorque = angleTo * GetPhysicsProcessDeltaTime() * TORQUE_COEFFICIENT;
-
+            ApplyTorqueTowardMouse();
             GravityScale = LinearVelocity.y < 0 ? 1.5f : 1f;
         }
 
@@ -126,12 +122,8 @@ namespace Game.GameObject
 
         private void StateDash()
         {
-            var result = GetTree().Root.World2d.DirectSpaceState.Raycast(previousPosition, tip.GlobalPosition, null, 1 << 0, true, false);
-            if (result != null)
+            if (CheckInsideTerrain())
             {
-                var offset = tip.GlobalPosition - GlobalPosition;
-                GlobalPosition = result.Position - offset;
-                LinearVelocity = Vector2.Zero;
                 stateMachine.ChangeState(StateNormal);
             }
 
@@ -154,6 +146,7 @@ namespace Game.GameObject
             LinearVelocity = Vector2.Zero;
             ApplyCentralImpulse(this.GetMouseDirection() * ATTACK_FORCE);
             AppliedTorque = 0f;
+            // animatedSprite.GlobalRotation = this.GetMouseDirection().Angle();
             Rotation = this.GetMouseDirection().Angle();
 
             if (IsInstanceValid(currentAttackTween))
@@ -175,6 +168,8 @@ namespace Game.GameObject
 
         private void StateAttack()
         {
+            CheckInsideTerrain();
+            ApplyTorqueTowardMouse();
             if (attackTimer.IsStopped())
             {
                 stateMachine.ChangeState(StateNormal);
@@ -186,6 +181,27 @@ namespace Game.GameObject
             GravityScale = 1f;
             sprite.Visible = true;
             animatedSprite.Visible = false;
+        }
+
+        private void ApplyTorqueTowardMouse()
+        {
+            var currentAngle = Vector2.Right.Rotated(Rotation);
+            var desiredAngle = this.GetMouseDirection();
+            var angleTo = currentAngle.AngleTo(desiredAngle);
+            AppliedTorque = angleTo * GetPhysicsProcessDeltaTime() * TORQUE_COEFFICIENT;
+        }
+
+        private bool CheckInsideTerrain()
+        {
+            var result = GetTree().Root.World2d.DirectSpaceState.Raycast(previousPosition, tip.GlobalPosition, null, 1 << 0, true, false);
+            if (result != null)
+            {
+                var offset = tip.GlobalPosition - GlobalPosition;
+                GlobalPosition = result.Position - offset;
+                LinearVelocity = Vector2.Zero;
+                return true;
+            }
+            return false;
         }
 
         private void TryLaunch()
@@ -227,7 +243,7 @@ namespace Game.GameObject
             swordHit.GlobalPosition = hurtboxComponent.GlobalPosition;
             // TODO: move this out of sword, perhaps to autoload
             GetTree().Paused = true;
-            GetTree().CreateTimer(.05f, true).Connect("timeout", this, nameof(ResetTimeScale));
+            GetTree().CreateTimer(.06f, true).Connect("timeout", this, nameof(ResetTimeScale));
         }
 
         private void ResetTimeScale()

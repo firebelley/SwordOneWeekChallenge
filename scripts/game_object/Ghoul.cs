@@ -32,6 +32,8 @@ namespace Game.GameObject
         private HealthComponent healthComponent;
         [Node]
         private AnimationPlayer animationPlayer;
+        [Node]
+        private AnimationPlayer blinkAnimationPlayer;
         [Node("%HurtboxShape")]
         private CollisionShape2D hurtboxShape;
         [Node]
@@ -178,6 +180,7 @@ namespace Game.GameObject
         private void StateDeath()
         {
             PlayShakeAnimation();
+            PlayBlinkAnimation();
             AccelerateToVelocity(Vector2.Zero, ACCELERATION_COEFFICIENT);
             if (deathTimer.IsStopped())
             {
@@ -210,6 +213,15 @@ namespace Game.GameObject
             {
                 animationPlayer.PlaybackSpeed = 1f / .1f;
                 animationPlayer.Play("shake");
+            }
+        }
+
+        private void PlayBlinkAnimation()
+        {
+            if (blinkAnimationPlayer.CurrentAnimation != "blink" || !blinkAnimationPlayer.IsPlaying())
+            {
+                blinkAnimationPlayer.PlaybackSpeed = 1f / .15f;
+                blinkAnimationPlayer.Play("blink");
             }
         }
 
