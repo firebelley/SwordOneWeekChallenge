@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://assets/art/ghoul.png" type="Texture" id=1]
 [ext_resource path="res://scripts/game_object/Ghoul.cs" type="Script" id=2]
 [ext_resource path="res://scenes/component/HurtboxComponent.tscn" type="PackedScene" id=3]
 [ext_resource path="res://scenes/component/HealthComponent.tscn" type="PackedScene" id=4]
 [ext_resource path="res://scenes/component/BlackboardComponent.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/game_object/Projectile.tscn" type="PackedScene" id=6]
 
 [sub_resource type="CircleShape2D" id=2]
 radius = 6.0
@@ -15,9 +16,21 @@ radius = 6.0
 collision_layer = 0
 script = ExtResource( 2 )
 
+[node name="ResourcePreloader" type="ResourcePreloader" parent="."]
+resources = [ PoolStringArray( "Projectile" ), [ ExtResource( 6 ) ] ]
+
 [node name="PathfindTimer" type="Timer" parent="."]
 process_mode = 0
 wait_time = 0.2
+one_shot = true
+
+[node name="AttackChargeTimer" type="Timer" parent="."]
+process_mode = 0
+wait_time = 0.5
+one_shot = true
+
+[node name="AttackCooldownTimer" type="Timer" parent="."]
+process_mode = 0
 one_shot = true
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]

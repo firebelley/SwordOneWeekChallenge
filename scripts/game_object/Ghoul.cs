@@ -18,14 +18,22 @@ namespace Game.GameObject
         [Node]
         private Timer pathfindTimer;
         [Node]
+        private Timer attackChargeTimer;
+        [Node]
+        private Timer attackCooldownTimer;
+        [Node]
         private HurtboxComponent hurtboxComponent;
         [Node]
         private BlackboardComponent blackboardComponent;
+        [Node]
+        private ResourcePreloader resourcePreloader;
 
         private enum State
         {
             Normal,
-            Knockback
+            Knockback,
+            AttackCharge,
+            Attack
         }
         private StateMachine<State> stateMachine = new();
 
@@ -44,6 +52,11 @@ namespace Game.GameObject
             stateMachine.AddState(State.Normal, StateNormal);
             stateMachine.AddEnterState(State.Knockback, EnterStateKnockback);
             stateMachine.AddState(State.Knockback, StateKnockback);
+            stateMachine.AddEnterState(State.AttackCharge, EnterStateAttackCharge);
+            stateMachine.AddState(State.AttackCharge, StateAttackCharge);
+            stateMachine.AddEnterState(State.Attack, EnterStateAttack);
+            stateMachine.AddState(State.Attack, StateAttack);
+            stateMachine.AddLeaveState(State.Attack, LeaveStateAttack);
             stateMachine.SetInitialState(State.Normal);
 
             navigationAgent2D.Connect("velocity_computed", this, nameof(OnVelocityComputed));
@@ -57,7 +70,6 @@ namespace Game.GameObject
 
         private void StateNormal()
         {
-
             var player = GetTree().GetFirstNodeInGroup<Sword>();
             var desiredVelocity = Vector2.Zero;
             if (player.GlobalPosition.DistanceSquaredTo(GlobalPosition) > RANGE * RANGE)
@@ -71,7 +83,12 @@ namespace Game.GameObject
                 desiredVelocity = (navigationAgent2D.GetNextLocation() - GlobalPosition).Normalized() * SPEED;
             }
 
-            velocity = velocity.LinearInterpolate(desiredVelocity, Mathf.Exp(-ACCELERATION_COEFFICIENT * GetPhysicsProcessDeltaTime()));
+            if (attackCooldownTimer.IsStopped() && HasPlayerLineOfSight())
+            {
+                stateMachine.ChangeState(StateAttackCharge);
+            }
+
+            AccelerateToVelocity(desiredVelocity, ACCELERATION_COEFFICIENT);
             navigationAgent2D.SetVelocity(velocity);
             velocity = MoveAndSlide(velocity);
         }
@@ -83,12 +100,70 @@ namespace Game.GameObject
 
         private void StateKnockback()
         {
-            velocity = velocity.LinearInterpolate(Vector2.Zero, Mathf.Exp(-KNOCKBACK_COEFFICIENT * GetPhysicsProcessDeltaTime()));
+            AccelerateToVelocity(Vector2.Zero, KNOCKBACK_COEFFICIENT);
             velocity = MoveAndSlide(velocity);
             if (velocity.LengthSquared() < 10)
             {
                 stateMachine.ChangeState(StateNormal);
             }
+        }
+
+        private void EnterStateAttackCharge()
+        {
+            attackChargeTimer.Start();
+        }
+
+        private void StateAttackCharge()
+        {
+            // TODO: do some sort of particle and shake here
+            if (attackChargeTimer.IsStopped())
+            {
+                stateMachine.ChangeState(StateAttack);
+            }
+            AccelerateToVelocity(Vector2.Zero, ACCELERATION_COEFFICIENT);
+        }
+
+        private void EnterStateAttack()
+        {
+            var playerPos = GetTree().GetFirstNodeInGroup<Sword>()?.GlobalPosition;
+            if (playerPos == null)
+            {
+                stateMachine.ChangeState(StateNormal);
+                return;
+            }
+            var magma = resourcePreloader.InstanceSceneOrNull<Projectile>();
+            magma.SetDirection((playerPos.Value - GlobalPosition).Normalized());
+            GetParent().AddChild(magma);
+            magma.GlobalPosition = GlobalPosition;
+        }
+
+        private void StateAttack()
+        {
+            // TODO: have some animation here
+            stateMachine.ChangeState(StateNormal);
+            AccelerateToVelocity(Vector2.Zero, ACCELERATION_COEFFICIENT);
+        }
+
+        private void LeaveStateAttack()
+        {
+            attackCooldownTimer.WaitTime = MathUtil.RNG.RandfRange(3f, 5f);
+            attackCooldownTimer.Start();
+        }
+
+        private void AccelerateToVelocity(Vector2 toVelocity, float coefficient)
+        {
+            velocity = velocity.LinearInterpolate(toVelocity, Mathf.Exp(-coefficient * GetPhysicsProcessDeltaTime()));
+        }
+
+        private bool HasPlayerLineOfSight()
+        {
+            var playerPos = GetTree().GetFirstNodeInGroup<Sword>()?.GlobalPosition;
+            if (playerPos == null)
+            {
+                return false;
+            }
+            var raycast = GetTree().Root.World2d.DirectSpaceState.Raycast(GlobalPosition, playerPos.Value, null, 1 << 0, true, false);
+            return raycast == null;
         }
 
         private void OnVelocityComputed(Vector2 vel)

@@ -30,6 +30,8 @@ namespace Game.GameObject
         private ResourcePreloader resourcePreloader;
         [Node]
         private Position2D tip;
+        [Node]
+        private HurtboxComponent hurtboxComponent;
 
         private Vector2 previousPosition;
 
@@ -88,6 +90,8 @@ namespace Game.GameObject
             stateMachine.SetInitialState(StateNormal);
 
             animatedSprite.Visible = false;
+
+            hurtboxComponent.Connect(nameof(HurtboxComponent.Hit), this, nameof(OnHit));
         }
 
         public override void _PhysicsProcess(float delta)
@@ -208,6 +212,11 @@ namespace Game.GameObject
             {
                 stateMachine.ChangeState(StateAttack);
             }
+        }
+
+        private void OnHit(HitboxComponent hitbox)
+        {
+            GD.Print("hit");
         }
     }
 }

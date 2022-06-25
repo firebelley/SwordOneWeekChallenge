@@ -28,3 +28,9 @@ position = Vector2( 279, 150 )
 unique_name_in_owner = true
 position = Vector2( 149, 132 )
 rotation = -0.785398
+
+[node name="Ghoul2" parent="Navigation2D" instance=ExtResource( 5 )]
+position = Vector2( 68, 300 )
+
+[node name="Ghoul3" parent="Navigation2D" instance=ExtResource( 5 )]
+position = Vector2( 258, 320 )
