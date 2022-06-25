@@ -55,7 +55,7 @@ particles_anim_loop = false
 
 [sub_resource type="Gradient" id=5]
 offsets = PoolRealArray( 0, 0.231231, 0.243243 )
-colors = PoolColorArray( 1, 1, 1, 1, 1, 1, 1, 1, 0.92549, 0.152941, 0.247059, 1 )
+colors = PoolColorArray( 1, 1, 1, 1, 1, 1, 1, 1, 0.913725, 0.521569, 0.215686, 1 )
 
 [sub_resource type="GradientTexture" id=6]
 gradient = SubResource( 5 )
@@ -75,6 +75,7 @@ orbit_velocity = 0.0
 orbit_velocity_random = 0.0
 angle = 180.0
 angle_random = 1.0
+scale = 1.5
 scale_curve = SubResource( 4 )
 color_ramp = SubResource( 6 )
 anim_offset = 1.0

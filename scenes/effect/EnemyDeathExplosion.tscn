@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://assets/art/effect/particles.png" type="Texture" id=1]
 [ext_resource path="res://scripts/effect/EnemyDeathExplosion.cs" type="Script" id=2]
@@ -54,15 +54,9 @@ particles_anim_h_frames = 3
 particles_anim_v_frames = 1
 particles_anim_loop = false
 
-[sub_resource type="Gradient" id=10]
-colors = PoolColorArray( 1, 1, 1, 1, 0.466797, 0.466797, 0.466797, 1 )
-
-[sub_resource type="GradientTexture" id=9]
-gradient = SubResource( 10 )
-
 [sub_resource type="Gradient" id=5]
-offsets = PoolRealArray( 0.228228, 0.282282 )
-colors = PoolColorArray( 1, 1, 1, 1, 0.92549, 0.152941, 0.247059, 1 )
+offsets = PoolRealArray( 0, 0.114114, 0.753754 )
+colors = PoolColorArray( 1, 1, 1, 1, 0.968627, 0.952941, 0.717647, 1, 0.913725, 0.521569, 0.215686, 1 )
 
 [sub_resource type="GradientTexture" id=6]
 gradient = SubResource( 5 )
@@ -92,7 +86,6 @@ scale = 3.0
 scale_random = 0.5
 scale_curve = SubResource( 4 )
 color_ramp = SubResource( 6 )
-color_initial_ramp = SubResource( 9 )
 anim_offset = 1.0
 anim_offset_random = 1.0
 
