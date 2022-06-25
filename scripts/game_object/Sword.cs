@@ -78,11 +78,6 @@ namespace Game.GameObject
                 GetTree().SetInputAsHandled();
                 TryDash();
             }
-            else if (evt.IsActionPressed("attack"))
-            {
-                GetTree().SetInputAsHandled();
-                TryAttack();
-            }
         }
 
         public override void _Ready()
@@ -120,6 +115,11 @@ namespace Game.GameObject
         {
             ApplyTorqueTowardMouse();
             GravityScale = LinearVelocity.y < 0 ? 1.5f : 1f;
+
+            if (Input.IsActionPressed("attack"))
+            {
+                TryAttack();
+            }
         }
 
         private void EnterStateDash()
@@ -169,11 +169,10 @@ namespace Game.GameObject
             {
                 animatedSprite = animatedSpriteAttack3;
             }
-            attackChain++;
 
             attackResetTimer.Start();
             attackTimer.WaitTime = attackTime;
-            if (attackChain > 2)
+            if (attackChain == 2)
             {
                 attackTimer.WaitTime = attackTime * 2f;
             }
@@ -191,9 +190,16 @@ namespace Game.GameObject
 
             var hitbox = resourcePreloader.InstanceSceneOrNull<HitboxComponent>("SwordHitbox");
             GetParent().AddChild(hitbox);
+            if (attackChain == 2)
+            {
+                hitbox.GetNode<CollisionShape2D>("BoxShape").Disabled = true;
+                hitbox.GetNode<CollisionShape2D>("CircleShape").Disabled = false;
+            }
             hitbox.GlobalPosition = GlobalPosition;
             hitbox.Rotation = this.GetMouseDirection().Angle();
             hitbox.Connect(nameof(HitboxComponent.HitHurtbox), this, nameof(OnHurtboxHit));
+
+            attackChain++;
         }
 
         private void StateAttack()
