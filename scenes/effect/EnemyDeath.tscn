@@ -40,6 +40,7 @@ anim_offset = 1.0
 anim_offset_random = 1.0
 
 [node name="EnemyDeath" type="Node2D"]
+modulate = Color( 1.2, 1.2, 1.2, 1 )
 
 [node name="Particles2D" type="Particles2D" parent="."]
 material = SubResource( 2 )

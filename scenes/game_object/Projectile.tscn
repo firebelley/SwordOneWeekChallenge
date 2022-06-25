@@ -51,6 +51,7 @@ anim_offset_random = 1.0
 radius = 3.0
 
 [node name="Projectile" type="KinematicBody2D"]
+modulate = Color( 1.2, 1.2, 1.2, 1 )
 collision_layer = 0
 script = ExtResource( 3 )
 
