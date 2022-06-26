@@ -1,5 +1,5 @@
-using Game.GameObject;
-using Game.Level;
+using Game.Data;
+using Game.UI;
 using Godot;
 using GodotUtilities;
 
@@ -7,20 +7,10 @@ namespace Game
 {
     public class RunManager : Node
     {
-        private const int MAX_WAVES = 3;
-
-        [Export]
-        private Godot.Collections.Array<PackedScene> levelPool = new();
-        [Export]
-        private Godot.Collections.Array<PackedScene> enemyPool = new();
-
         [Node]
-        private Timer waveTimer;
+        private ResourcePreloader resourcePreloader;
 
-        private BaseLevel currentLevel;
-        private int enemyCount;
-        private int roomLevel;
-        private int currentWave;
+        private RunConfig runConfig;
 
         public override void _Notification(int what)
         {
@@ -32,67 +22,40 @@ namespace Game
 
         public override void _Ready()
         {
-            waveTimer.Connect("timeout", this, nameof(OnWaveTimerTimeout));
-            BeginNewLevel();
+            runConfig = new();
+            ShowLevelSelector();
         }
 
-        private void BeginNewLevel()
+        private void ClearNodes()
         {
-            roomLevel++;
-            currentWave = 0;
-            SetupLevel();
-            StartWave();
+            this.GetFirstNodeOfType<LevelSelector>()?.QueueFree();
+            this.GetFirstNodeOfType<RoomManager>()?.QueueFree();
         }
 
-        private void StartWave()
+        private void ShowLevelSelector()
         {
-            waveTimer.Start();
-            currentWave++;
+            ClearNodes();
+            var levelSelector = resourcePreloader.InstanceSceneOrNull<LevelSelector>();
+            AddChild(levelSelector);
+            levelSelector.SetupData(runConfig);
+            levelSelector.Connect(nameof(LevelSelector.RoomSelected), this, nameof(OnRoomSelected));
         }
 
-        private void SetupLevel()
+        private void OnRoomSelected(int roomIndex)
         {
-            var levelIndex = MathUtil.RNG.RandiRange(0, levelPool.Count - 1);
-            var level = levelPool[levelIndex];
-            currentLevel = level.InstanceOrNull<BaseLevel>();
-            AddChild(currentLevel);
+            ClearNodes();
+            runConfig.Level = roomIndex;
+            GD.Print(runConfig.Level);
+            var roomManager = resourcePreloader.InstanceSceneOrNull<RoomManager>();
+            // TODO: transition elegantly
+            AddChild(roomManager);
+            roomManager.Connect(nameof(RoomManager.RoomComplete), this, nameof(OnRoomComplete));
+            roomManager.StartRoom(runConfig, new());
         }
 
-        private void SpawnEnemies()
+        private void OnRoomComplete()
         {
-            for (int i = 0; i < 3 + currentWave; i++)
-            {
-                var enemyIndex = MathUtil.RNG.RandiRange(0, levelPool.Count - 1);
-                var enemy = enemyPool[enemyIndex].InstanceOrNull<Ghoul>();
-                currentLevel.Entities.AddChild(enemy);
-                enemy.Connect(nameof(Ghoul.Died), this, nameof(OnEnemyDied));
-
-                var tileIndex = MathUtil.RNG.RandiRange(0, currentLevel.FreeTiles.Count - 1);
-                var tilePos = currentLevel.FreeTiles[tileIndex];
-                enemy.GlobalPosition = (tilePos * 16f) + (Vector2.One * 8f);
-                enemyCount++;
-            }
-        }
-
-        private void OnWaveTimerTimeout()
-        {
-            SpawnEnemies();
-        }
-
-        private void OnEnemyDied()
-        {
-            enemyCount--;
-            if (enemyCount <= 0)
-            {
-                if (currentWave == MAX_WAVES)
-                {
-                    BeginNewLevel();
-                }
-                else
-                {
-                    StartWave();
-                }
-            }
+            ShowLevelSelector();
         }
     }
 }

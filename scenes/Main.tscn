@@ -1,11 +1,7 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=2 format=2]
 
 [ext_resource path="res://scenes/RunManager.tscn" type="PackedScene" id=1]
-[ext_resource path="res://scenes/level/Level1.tscn" type="PackedScene" id=2]
-[ext_resource path="res://scenes/game_object/Ghoul.tscn" type="PackedScene" id=3]
 
 [node name="Main" type="Node"]
 
 [node name="RunManager" parent="." instance=ExtResource( 1 )]
-levelPool = [ ExtResource( 2 ) ]
-enemyPool = [ ExtResource( 3 ) ]
