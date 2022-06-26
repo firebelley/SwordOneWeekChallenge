@@ -12,7 +12,7 @@ namespace Game.Data
 
         public List<PerkType> perks = new();
 
-        public int CurrentHealth { get; private set; } = 3;
+        public int CurrentHealth = 3;
         public int MaxHealth { get; private set; } = 3;
 
         public List<PerkType> GetPerkOptions()

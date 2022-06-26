@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 using GodotUtilities;
 
@@ -24,15 +25,29 @@ namespace Game.Component
         public override void _Ready()
         {
             var healthComponent = this.GetNullableNodePath<HealthComponent>(healthComponentPath);
+            SetHealthComponent(healthComponent);
+        }
+
+        public void SetHealthComponent(HealthComponent healthComponent)
+        {
             healthComponent?.Connect(nameof(HealthComponent.HealthChanged), this, nameof(OnHealthChanged), new Godot.Collections.Array { healthComponent });
             healthComponent?.Connect(nameof(HealthComponent.MaxHealthChanged), this, nameof(OnMaxHealthChanged), new Godot.Collections.Array { healthComponent });
 
-            Initialize(healthComponent);
-            UpdateBars(healthComponent);
+            if (healthComponent != null)
+            {
+                Initialize(healthComponent);
+                UpdateBars(healthComponent);
+            }
         }
 
         private void Initialize(HealthComponent healthComponent)
         {
+            for (int i = 1; i < hBoxContainer.GetChildCount(); i++)
+            {
+                hBoxContainer.GetChild(i).QueueFree();
+            }
+
+            colorRect.Color = new Color(colorRect.Color, 1f);
             for (int i = 1; i < healthComponent.MaxHealth; i++)
             {
                 var newRect = colorRect.Duplicate() as ColorRect;

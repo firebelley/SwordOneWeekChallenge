@@ -16,9 +16,11 @@ margin_left = -10.0
 margin_top = -2.0
 margin_right = 11.0
 margin_bottom = 2.0
+rect_min_size = Vector2( 21, 4 )
 mouse_filter = 2
 custom_styles/panel = SubResource( 1 )
 script = ExtResource( 2 )
+healthComponentPath = NodePath("")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 margin_left = 1.0

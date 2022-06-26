@@ -1,3 +1,4 @@
+using Game.Component;
 using Game.Data;
 using Game.GameObject;
 using Game.Level;
@@ -14,6 +15,8 @@ namespace Game
         public delegate void RoomComplete();
         [Signal]
         public delegate void RoomFailed();
+        [Signal]
+        public delegate void SwordHealthChanged(int newHealth);
 
         [Export]
         private Godot.Collections.Array<PackedScene> levelPool = new();
@@ -71,6 +74,7 @@ namespace Game
             var sword = currentLevel.GetNode<Sword>("%Sword");
             sword?.HealthComponent.SetMaxHealth(runConfig.MaxHealth);
             sword?.HealthComponent.SetCurrentHealth(runConfig.CurrentHealth);
+            sword?.HealthComponent.Connect(nameof(HealthComponent.HealthChanged), this, nameof(OnHealthChanged));
             sword?.Connect(nameof(Sword.Died), this, nameof(OnSwordDied));
         }
 
@@ -115,6 +119,11 @@ namespace Game
         {
             // TODO: do some stuff here like delay
             EmitSignal(nameof(RoomFailed));
+        }
+
+        private void OnHealthChanged(int newHealth)
+        {
+            EmitSignal(nameof(SwordHealthChanged), newHealth);
         }
     }
 }

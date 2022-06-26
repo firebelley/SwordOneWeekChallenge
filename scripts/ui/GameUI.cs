@@ -1,3 +1,4 @@
+using Game.Component;
 using Game.GameObject;
 using Godot;
 using GodotUtilities;
@@ -10,6 +11,8 @@ namespace Game.UI
         private ColorRect dashIndicator;
         [Node("%LaunchIndicator")]
         private ColorRect launchIndicator;
+        [Node("%HealthBarComponent")]
+        private HealthBarComponent healthBarComponent;
 
         public override void _Notification(int what)
         {
@@ -23,6 +26,7 @@ namespace Game.UI
         {
             sword.Connect(nameof(Sword.DashTimerStarted), this, nameof(OnDashTimerStarted));
             sword.Connect(nameof(Sword.LaunchTimerStarted), this, nameof(OnLaunchTimerStarted));
+            healthBarComponent.SetHealthComponent(sword.HealthComponent);
         }
 
         private void OnDashTimerStarted(float time)

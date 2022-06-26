@@ -56,12 +56,12 @@ namespace Game
         private void OnRoomSelected(int roomIndex)
         {
             ClearNodes();
-            GD.Print(runConfig.Level);
             var roomManager = resourcePreloader.InstanceSceneOrNull<RoomManager>();
             // TODO: transition elegantly
             AddChild(roomManager);
             roomManager.Connect(nameof(RoomManager.RoomComplete), this, nameof(OnRoomComplete));
             roomManager.Connect(nameof(RoomManager.RoomFailed), this, nameof(OnRoomFailed));
+            roomManager.Connect(nameof(RoomManager.SwordHealthChanged), this, nameof(OnSwordHealthChanged));
             roomManager.StartRoom(runConfig, new());
         }
 
@@ -81,6 +81,11 @@ namespace Game
             runConfig.AddActivePerk(perk);
             runConfig.Level++;
             ShowLevelSelector();
+        }
+
+        private void OnSwordHealthChanged(int newHealth)
+        {
+            runConfig.CurrentHealth = newHealth;
         }
     }
 }
