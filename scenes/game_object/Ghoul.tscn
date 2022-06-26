@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://assets/art/ghoul.png" type="Texture" id=1]
 [ext_resource path="res://scripts/game_object/Ghoul.cs" type="Script" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://scenes/effect/AttackCharge.tscn" type="PackedScene" id=7]
 [ext_resource path="res://scenes/effect/EnemyDeath.tscn" type="PackedScene" id=8]
 [ext_resource path="res://scenes/effect/EnemyDeathExplosion.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/component/HealthBarComponent.tscn" type="PackedScene" id=10]
 
 [sub_resource type="Animation" id=3]
 length = 0.001
@@ -121,6 +122,11 @@ avoidance_enabled = true
 [node name="HealthComponent" parent="." instance=ExtResource( 4 )]
 
 [node name="BlackboardComponent" parent="." instance=ExtResource( 5 )]
+
+[node name="HealthBarComponent" parent="." instance=ExtResource( 10 )]
+margin_top = -17.0
+margin_bottom = -13.0
+healthComponentPath = NodePath("../HealthComponent")
 
 [node name="Sprite" type="Sprite" parent="."]
 texture = ExtResource( 1 )
