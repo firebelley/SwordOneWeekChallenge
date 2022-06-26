@@ -31,6 +31,8 @@ namespace Game.Component
         public override void _Ready()
         {
             currentHealth = maxHealth;
+            EmitSignal(nameof(MaxHealthChanged), maxHealth);
+            EmitSignal(nameof(HealthChanged), currentHealth);
         }
 
         public void SetMaxHealth(int max)
