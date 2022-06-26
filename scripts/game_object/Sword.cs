@@ -16,6 +16,8 @@ namespace Game.GameObject
         [Signal]
         public delegate void EnemyHit();
         [Signal]
+        public delegate void DamageTaken();
+        [Signal]
         public delegate void Died();
 
         [Node]
@@ -303,6 +305,7 @@ namespace Game.GameObject
         private void OnHit(HitboxComponent hitbox)
         {
             healthComponent.Damage(1);
+            EmitSignal(nameof(DamageTaken));
         }
 
         private void OnHurtboxHit(HurtboxComponent hurtboxComponent)

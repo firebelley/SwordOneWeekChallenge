@@ -11,7 +11,7 @@ namespace Game.Autoload
             instance = this;
         }
 
-        public static void HitStop()
+        public static void Hitstop()
         {
             instance.GetTree().Paused = true;
             instance.GetTree().CreateTimer(.06f, true).Connect("timeout", instance, nameof(ResetPause));

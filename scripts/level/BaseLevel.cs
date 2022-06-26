@@ -29,6 +29,7 @@ namespace Game.Level
             var sword = GetNode<Sword>("%Sword");
             this.GetFirstNodeOfType<GameUI>().ConnectSword(sword);
             sword.Connect(nameof(Sword.EnemyHit), this, nameof(OnEnemyHit));
+            sword.Connect(nameof(Sword.DamageTaken), this, nameof(OnDamageTaken));
 
             RecordFreeTiles();
         }
@@ -49,10 +50,20 @@ namespace Game.Level
 
         }
 
+        private void DoHitstop()
+        {
+            HitstopManager.Hitstop();
+            this.GetFirstNodeOfType<GameCamera>()?.Shake();
+        }
+
         private void OnEnemyHit()
         {
-            HitstopManager.HitStop();
-            this.GetFirstNodeOfType<GameCamera>()?.Shake();
+            DoHitstop();
+        }
+
+        private void OnDamageTaken()
+        {
+            DoHitstop();
         }
     }
 }
