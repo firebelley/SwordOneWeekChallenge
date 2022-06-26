@@ -9,7 +9,9 @@ namespace Game.Component
         public delegate void HitHurtbox(HurtboxComponent hurtboxComponent);
 
         [Export]
-        private bool oneShot;
+        protected bool oneShot;
+        [Export]
+        public bool ApplyKnockback { get; set; }
 
         private bool shouldFree;
 

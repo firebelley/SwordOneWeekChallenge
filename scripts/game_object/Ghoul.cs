@@ -234,8 +234,11 @@ namespace Game.GameObject
 
         private void OnHit(HitboxComponent hitboxComponent)
         {
-            blackboardComponent.SetValue(Constants.V_KNOCKBACK_DIRECTION, Vector2.Right.Rotated(hitboxComponent.Rotation));
-            stateMachine.ChangeState(StateKnockback);
+            if (hitboxComponent.ApplyKnockback)
+            {
+                blackboardComponent.SetValue(Constants.V_KNOCKBACK_DIRECTION, Vector2.Right.Rotated(hitboxComponent.Rotation));
+                stateMachine.ChangeState(StateKnockback);
+            }
             healthComponent.Damage(1);
         }
 

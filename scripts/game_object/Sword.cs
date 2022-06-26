@@ -12,9 +12,7 @@ namespace Game.GameObject
         [Signal]
         public delegate void DashTimerStarted(float time);
         [Signal]
-        public delegate void LaunchTimerStopped();
-        [Signal]
-        public delegate void DashTimerStopped();
+        public delegate void DashEnded();
         [Signal]
         public delegate void EnemyHit();
 
@@ -53,6 +51,8 @@ namespace Game.GameObject
         private const float ATTACK_FORCE = 300f;
         private const float DASH_LINEAR_DAMP = 8f;
         private const float ATTACK_LINEAR_DAMP = 8f;
+
+        public Vector2 TipPosition => tip.GlobalPosition;
 
         public override void _Notification(int what)
         {
@@ -138,10 +138,17 @@ namespace Game.GameObject
 
             GravityScale = 0;
             LinearDamp = DASH_LINEAR_DAMP;
-            Rotation = this.GetMouseDirection().Angle();
+            Rotation = direction.Angle();
             AppliedTorque = 0f;
             dashParticles.Emitting = true;
             (dashParticles.ProcessMaterial as ParticlesMaterial).Angle = Mathf.Rad2Deg(-direction.Angle());
+
+            var hitbox = resourcePreloader.InstanceSceneOrNull<SwordHitbox>();
+            GetParent().AddChild(hitbox);
+            hitbox.EnableDashShape(this);
+            hitbox.GlobalPosition = GlobalPosition;
+            hitbox.Rotation = direction.Angle();
+            hitbox.Connect(nameof(HitboxComponent.HitHurtbox), this, nameof(OnHurtboxHit));
         }
 
         private void StateDash()
@@ -162,6 +169,7 @@ namespace Game.GameObject
             GravityScale = 1;
             LinearDamp = 0;
             dashParticles.Emitting = false;
+            EmitSignal(nameof(DashEnded));
         }
 
         private void EnterStateAttack()
@@ -201,12 +209,15 @@ namespace Game.GameObject
             animatedSprite.Play("attack");
             animatedSprite.Frame = 0;
 
-            var hitbox = resourcePreloader.InstanceSceneOrNull<HitboxComponent>("SwordHitbox");
+            var hitbox = resourcePreloader.InstanceSceneOrNull<SwordHitbox>();
             GetParent().AddChild(hitbox);
             if (attackChain == 2)
             {
-                hitbox.GetNode<CollisionShape2D>("BoxShape").Disabled = true;
-                hitbox.GetNode<CollisionShape2D>("CircleShape").Disabled = false;
+                hitbox.EnableCircleShape();
+            }
+            else
+            {
+                hitbox.EnableBoxShape();
             }
             hitbox.GlobalPosition = GlobalPosition;
             hitbox.Rotation = this.GetMouseDirection().Angle();
