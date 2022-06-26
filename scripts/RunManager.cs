@@ -1,4 +1,5 @@
 using Game.Data;
+using Game.Data.Perk;
 using Game.UI;
 using Godot;
 using GodotUtilities;
@@ -30,6 +31,7 @@ namespace Game
         {
             this.GetFirstNodeOfType<LevelSelector>()?.QueueFree();
             this.GetFirstNodeOfType<RoomManager>()?.QueueFree();
+            this.GetFirstNodeOfType<PerkChoice>()?.QueueFree();
         }
 
         private void ShowLevelSelector()
@@ -39,6 +41,16 @@ namespace Game
             AddChild(levelSelector);
             levelSelector.SetupData(runConfig);
             levelSelector.Connect(nameof(LevelSelector.RoomSelected), this, nameof(OnRoomSelected));
+        }
+
+        private void ShowPerkChoice()
+        {
+            ClearNodes();
+            var perkChoice = resourcePreloader.InstanceSceneOrNull<PerkChoice>();
+            AddChild(perkChoice);
+            var perks = runConfig.GetPerkOptions();
+            perkChoice.SetChoices(perks);
+            perkChoice.Connect(nameof(PerkChoice.PerkSelected), this, nameof(OnPerkSelected));
         }
 
         private void OnRoomSelected(int roomIndex)
@@ -55,13 +67,19 @@ namespace Game
 
         private void OnRoomComplete()
         {
-            runConfig.Level++;
-            ShowLevelSelector();
+            ShowPerkChoice();
         }
 
         private void OnRoomFailed()
         {
             runConfig = new();
+            ShowLevelSelector();
+        }
+
+        private void OnPerkSelected(PerkType perk)
+        {
+            runConfig.AddActivePerk(perk);
+            runConfig.Level++;
             ShowLevelSelector();
         }
     }

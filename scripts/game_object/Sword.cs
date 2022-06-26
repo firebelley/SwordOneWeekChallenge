@@ -59,6 +59,7 @@ namespace Game.GameObject
         private const float ATTACK_LINEAR_DAMP = 8f;
 
         public Vector2 TipPosition => tip.GlobalPosition;
+        public HealthComponent HealthComponent => healthComponent;
 
         public override void _Notification(int what)
         {

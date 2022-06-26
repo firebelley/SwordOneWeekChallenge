@@ -43,6 +43,7 @@ namespace Game
         public void StartRoom(RunConfig runConfig, RoomConfig roomConfig)
         {
             BeginNewLevel();
+            SetupSword(runConfig);
         }
 
         private void BeginNewLevel()
@@ -62,8 +63,15 @@ namespace Game
             var levelIndex = MathUtil.RNG.RandiRange(0, levelPool.Count - 1);
             var level = levelPool[levelIndex];
             currentLevel = level.InstanceOrNull<BaseLevel>();
-            currentLevel.GetNode<Sword>("%Sword")?.Connect(nameof(Sword.Died), this, nameof(OnSwordDied));
             AddChild(currentLevel);
+        }
+
+        private void SetupSword(RunConfig runConfig)
+        {
+            var sword = currentLevel.GetNode<Sword>("%Sword");
+            sword?.HealthComponent.SetMaxHealth(runConfig.MaxHealth);
+            sword?.HealthComponent.SetCurrentHealth(runConfig.CurrentHealth);
+            sword?.Connect(nameof(Sword.Died), this, nameof(OnSwordDied));
         }
 
         private void SpawnEnemies()

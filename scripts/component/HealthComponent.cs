@@ -28,6 +28,16 @@ namespace Game.Component
             currentHealth = maxHealth;
         }
 
+        public void SetMaxHealth(int max)
+        {
+            maxHealth = max;
+        }
+
+        public void SetCurrentHealth(int current)
+        {
+            currentHealth = current;
+        }
+
         public void Damage(int damage)
         {
             currentHealth = Mathf.Clamp(currentHealth - damage, 0, maxHealth);
