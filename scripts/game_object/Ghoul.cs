@@ -14,6 +14,9 @@ namespace Game.GameObject
         private const float RANGE = 75f;
         private const float KNOCKBACK_FORCE = 250f;
 
+        [Signal]
+        public delegate void Died();
+
         [Node]
         private NavigationAgent2D navigationAgent2D;
         [Node]
@@ -186,6 +189,7 @@ namespace Game.GameObject
                 var node = resourcePreloader.InstanceSceneOrNull<Node2D>("EnemyDeathExplosion");
                 GetParent().AddChild(node);
                 node.GlobalPosition = GlobalPosition;
+                EmitSignal(nameof(Died));
                 QueueFree();
             }
         }
