@@ -148,6 +148,7 @@ namespace Game.GameObject
             hitbox.EnableDashShape(this);
             hitbox.GlobalPosition = GlobalPosition;
             hitbox.Rotation = direction.Angle();
+            hitbox.ApplyKnockback = false;
             hitbox.Connect(nameof(HitboxComponent.HitHurtbox), this, nameof(OnHurtboxHit));
         }
 
