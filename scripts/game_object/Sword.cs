@@ -15,6 +15,8 @@ namespace Game.GameObject
         public delegate void DashEnded();
         [Signal]
         public delegate void EnemyHit();
+        [Signal]
+        public delegate void Died();
 
         [Node]
         private Timer launchTimer;
@@ -42,6 +44,8 @@ namespace Game.GameObject
         private HurtboxComponent hurtboxComponent;
         [Node]
         private Particles2D dashParticles;
+        [Node]
+        private HealthComponent healthComponent;
 
         private Vector2 previousPosition;
 
@@ -106,6 +110,7 @@ namespace Game.GameObject
 
             hurtboxComponent.Connect(nameof(HurtboxComponent.Hit), this, nameof(OnHit));
             attackResetTimer.Connect("timeout", this, nameof(OnAttackResetTimeout));
+            healthComponent.Connect(nameof(HealthComponent.Died), this, nameof(OnDied));
         }
 
         public override void _PhysicsProcess(float delta)
@@ -297,7 +302,7 @@ namespace Game.GameObject
 
         private void OnHit(HitboxComponent hitbox)
         {
-            GD.Print("hit");
+            healthComponent.Damage(1);
         }
 
         private void OnHurtboxHit(HurtboxComponent hurtboxComponent)
@@ -311,6 +316,12 @@ namespace Game.GameObject
         private void OnAttackResetTimeout()
         {
             attackChain = 0;
+        }
+
+        private void OnDied()
+        {
+            QueueFree();
+            EmitSignal(nameof(Died));
         }
     }
 }

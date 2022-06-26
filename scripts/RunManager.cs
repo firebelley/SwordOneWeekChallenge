@@ -44,17 +44,24 @@ namespace Game
         private void OnRoomSelected(int roomIndex)
         {
             ClearNodes();
-            runConfig.Level = roomIndex;
             GD.Print(runConfig.Level);
             var roomManager = resourcePreloader.InstanceSceneOrNull<RoomManager>();
             // TODO: transition elegantly
             AddChild(roomManager);
             roomManager.Connect(nameof(RoomManager.RoomComplete), this, nameof(OnRoomComplete));
+            roomManager.Connect(nameof(RoomManager.RoomFailed), this, nameof(OnRoomFailed));
             roomManager.StartRoom(runConfig, new());
         }
 
         private void OnRoomComplete()
         {
+            runConfig.Level++;
+            ShowLevelSelector();
+        }
+
+        private void OnRoomFailed()
+        {
+            runConfig = new();
             ShowLevelSelector();
         }
     }

@@ -35,6 +35,10 @@ namespace Game.UI
                 buttonContainer.AddChild(button);
                 button.Text = $"{i + 1}";
                 button.Connect("pressed", this, nameof(OnButtonPressed), new Godot.Collections.Array { i });
+                if (i != runConfig.Level)
+                {
+                    button.Disabled = true;
+                }
             }
         }
 

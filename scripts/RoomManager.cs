@@ -12,6 +12,8 @@ namespace Game
 
         [Signal]
         public delegate void RoomComplete();
+        [Signal]
+        public delegate void RoomFailed();
 
         [Export]
         private Godot.Collections.Array<PackedScene> levelPool = new();
@@ -60,6 +62,7 @@ namespace Game
             var levelIndex = MathUtil.RNG.RandiRange(0, levelPool.Count - 1);
             var level = levelPool[levelIndex];
             currentLevel = level.InstanceOrNull<BaseLevel>();
+            currentLevel.GetNode<Sword>("%Sword")?.Connect(nameof(Sword.Died), this, nameof(OnSwordDied));
             AddChild(currentLevel);
         }
 
@@ -67,7 +70,7 @@ namespace Game
         {
             for (int i = 0; i < 3 + currentWave; i++)
             {
-                var enemyIndex = MathUtil.RNG.RandiRange(0, levelPool.Count - 1);
+                var enemyIndex = MathUtil.RNG.RandiRange(0, enemyPool.Count - 1);
                 var enemy = enemyPool[enemyIndex].InstanceOrNull<Ghoul>();
                 currentLevel.Entities.AddChild(enemy);
                 enemy.Connect(nameof(Ghoul.Died), this, nameof(OnEnemyDied));
@@ -98,6 +101,12 @@ namespace Game
                     StartWave();
                 }
             }
+        }
+
+        private void OnSwordDied()
+        {
+            // TODO: do some stuff here like delay
+            EmitSignal(nameof(RoomFailed));
         }
     }
 }

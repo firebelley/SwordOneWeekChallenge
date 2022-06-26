@@ -1,12 +1,13 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://scripts/RoomManager.cs" type="Script" id=1]
 [ext_resource path="res://scenes/game_object/Ghoul.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scenes/level/Level1.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/level/Level2.tscn" type="PackedScene" id=4]
 
 [node name="RoomManager" type="Node"]
 script = ExtResource( 1 )
-levelPool = [ ExtResource( 3 ) ]
+levelPool = [ ExtResource( 3 ), ExtResource( 4 ) ]
 enemyPool = [ ExtResource( 2 ) ]
 
 [node name="WaveTimer" type="Timer" parent="."]
