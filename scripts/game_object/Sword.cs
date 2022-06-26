@@ -42,6 +42,8 @@ namespace Game.GameObject
         private Position2D tip;
         [Node]
         private HurtboxComponent hurtboxComponent;
+        [Node]
+        private Particles2D dashParticles;
 
         private Vector2 previousPosition;
 
@@ -130,13 +132,16 @@ namespace Game.GameObject
         private void EnterStateDash()
         {
             dashTimer.Start();
-            ApplyCentralImpulse(this.GetMouseDirection() * DASH_FORCE);
+            var direction = this.GetMouseDirection();
+            ApplyCentralImpulse(direction * DASH_FORCE);
             EmitSignal(nameof(DashTimerStarted), dashTimer.WaitTime);
 
             GravityScale = 0;
             LinearDamp = DASH_LINEAR_DAMP;
             Rotation = this.GetMouseDirection().Angle();
             AppliedTorque = 0f;
+            dashParticles.Emitting = true;
+            (dashParticles.ProcessMaterial as ParticlesMaterial).Angle = Mathf.Rad2Deg(-direction.Angle());
         }
 
         private void StateDash()
@@ -156,6 +161,7 @@ namespace Game.GameObject
         {
             GravityScale = 1;
             LinearDamp = 0;
+            dashParticles.Emitting = false;
         }
 
         private void EnterStateAttack()
