@@ -54,9 +54,9 @@ namespace Game.GameObject
         private const float LAUNCH_FORCE = 300f;
         private const int TORQUE_COEFFICIENT = 200_000;
         private const float DASH_FORCE = 1500f;
-        private const float ATTACK_FORCE = 300f;
-        private const float DASH_LINEAR_DAMP = 8f;
-        private const float ATTACK_LINEAR_DAMP = 8f;
+        private const float ATTACK_FORCE = 1000f;
+        private const float DASH_LINEAR_DAMP = 12f;
+        private const float ATTACK_LINEAR_DAMP = 20f;
 
         public Vector2 TipPosition => tip.GlobalPosition;
         public HealthComponent HealthComponent => healthComponent;
@@ -166,8 +166,11 @@ namespace Game.GameObject
             {
                 stateMachine.ChangeState(StateNormal);
             }
-
-            if (dashTimer.TimeLeft < .75f)
+            else if (Input.IsActionPressed("attack"))
+            {
+                TryAttack();
+            }
+            else if (dashTimer.TimeLeft < .75f)
             {
                 stateMachine.ChangeState(StateNormal);
             }

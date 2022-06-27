@@ -4,10 +4,10 @@
 [ext_resource path="res://scripts/game_object/SwordHitbox.cs" type="Script" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 18, 28 )
+extents = Vector2( 24, 28 )
 
 [sub_resource type="CircleShape2D" id=2]
-radius = 36.0
+radius = 48.0
 
 [sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 10, 12 )
@@ -19,12 +19,10 @@ ApplyKnockback = true
 oneShot = true
 
 [node name="BoxShape" type="CollisionShape2D" parent="." index="0"]
-visible = false
-position = Vector2( 18, 0 )
+position = Vector2( 24, 0 )
 shape = SubResource( 1 )
 
 [node name="CircleShape" type="CollisionShape2D" parent="." index="1"]
-visible = false
 shape = SubResource( 2 )
 disabled = true
 

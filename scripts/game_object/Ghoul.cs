@@ -194,11 +194,13 @@ namespace Game.GameObject
             }
         }
 
+        // TODO: put in velocity component
         private void AccelerateToVelocity(Vector2 toVelocity, float coefficient)
         {
             velocity = velocity.LinearInterpolate(toVelocity, Mathf.Exp(-coefficient * GetPhysicsProcessDeltaTime()));
         }
 
+        // TODO: abstract this out
         private bool HasPlayerLineOfSight()
         {
             var playerPos = GetTree().GetFirstNodeInGroup<Sword>()?.GlobalPosition;
@@ -210,6 +212,7 @@ namespace Game.GameObject
             return raycast == null;
         }
 
+        // TODO: abstract this out
         private void PlayShakeAnimation()
         {
             if (animationPlayer.CurrentAnimation != "shake" || !animationPlayer.IsPlaying())
@@ -219,6 +222,7 @@ namespace Game.GameObject
             }
         }
 
+        // TODO: abstract this out
         private void PlayBlinkAnimation()
         {
             if (blinkAnimationPlayer.CurrentAnimation != "blink" || !blinkAnimationPlayer.IsPlaying())
@@ -228,6 +232,7 @@ namespace Game.GameObject
             }
         }
 
+        // TODO: abstract this out
         private void OnVelocityComputed(Vector2 vel)
         {
             if (stateMachine.GetCurrentState() == State.Normal)
