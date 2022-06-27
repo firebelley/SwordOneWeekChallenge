@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://scripts/RoomManager.cs" type="Script" id=1]
 [ext_resource path="res://scenes/game_object/Ghoul.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scenes/level/Level1.tscn" type="PackedScene" id=3]
 [ext_resource path="res://scenes/level/Level2.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scenes/ui/ScreenBanner.tscn" type="PackedScene" id=5]
 
 [node name="RoomManager" type="Node"]
 script = ExtResource( 1 )
@@ -11,5 +12,19 @@ levelPool = [ ExtResource( 3 ), ExtResource( 4 ) ]
 enemyPool = [ ExtResource( 2 ) ]
 
 [node name="WaveTimer" type="Timer" parent="."]
-wait_time = 3.0
+wait_time = 3.5
 one_shot = true
+
+[node name="WaveIntervalTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[node name="EndTimer" type="Timer" parent="."]
+wait_time = 3.5
+one_shot = true
+
+[node name="IncomingScreenBanner" parent="." instance=ExtResource( 5 )]
+text = "GHOULS INCOMING"
+
+[node name="CompleteScreenBanner" parent="." instance=ExtResource( 5 )]
+text = "ENEMIES DESTROYED"

@@ -2,6 +2,7 @@ using Game.Component;
 using Game.Data;
 using Game.GameObject;
 using Game.Level;
+using Game.UI;
 using Godot;
 using GodotUtilities;
 
@@ -9,7 +10,7 @@ namespace Game
 {
     public class RoomManager : Node
     {
-        private const int MAX_WAVES = 1;
+        private const int MAX_WAVES = 3;
 
         [Signal]
         public delegate void RoomComplete();
@@ -25,6 +26,14 @@ namespace Game
 
         [Node]
         private Timer waveTimer;
+        [Node]
+        private Timer endTimer;
+        [Node]
+        private Timer waveIntervalTimer;
+        [Node]
+        private ScreenBanner incomingScreenBanner;
+        [Node]
+        private ScreenBanner completeScreenBanner;
 
         private BaseLevel currentLevel;
         private int enemyCount;
@@ -41,6 +50,8 @@ namespace Game
         public override void _Ready()
         {
             waveTimer.Connect("timeout", this, nameof(OnWaveTimerTimeout));
+            endTimer.Connect("timeout", this, nameof(OnEndTimerTimeout));
+            waveIntervalTimer.Connect("timeout", this, nameof(OnWaveIntervalTimerTimeout));
         }
 
         public void StartRoom(RunConfig runConfig, RoomConfig roomConfig)
@@ -52,11 +63,12 @@ namespace Game
         private void BeginNewLevel()
         {
             SetupLevel();
-            StartWave();
+            waveIntervalTimer.Start();
         }
 
         private void StartWave()
         {
+            incomingScreenBanner.Play();
             waveTimer.Start();
             currentWave++;
         }
@@ -80,7 +92,7 @@ namespace Game
 
         private void SpawnEnemies()
         {
-            for (int i = 0; i < 3 + currentWave; i++)
+            for (int i = 0; i < 2 + currentWave; i++)
             {
                 var enemyIndex = MathUtil.RNG.RandiRange(0, enemyPool.Count - 1);
                 var enemy = enemyPool[enemyIndex].InstanceOrNull<Ghoul>();
@@ -106,11 +118,12 @@ namespace Game
             {
                 if (currentWave == MAX_WAVES)
                 {
-                    EmitSignal(nameof(RoomComplete));
+                    completeScreenBanner.Play();
+                    endTimer.Start();
                 }
                 else
                 {
-                    StartWave();
+                    waveIntervalTimer.Start();
                 }
             }
         }
@@ -124,6 +137,16 @@ namespace Game
         private void OnHealthChanged(int newHealth)
         {
             EmitSignal(nameof(SwordHealthChanged), newHealth);
+        }
+
+        private void OnEndTimerTimeout()
+        {
+            EmitSignal(nameof(RoomComplete));
+        }
+
+        private void OnWaveIntervalTimerTimeout()
+        {
+            StartWave();
         }
     }
 }
