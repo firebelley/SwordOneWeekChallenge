@@ -16,9 +16,9 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Visuals="*res://scripts/autoload/Visuals.cs"
-HitstopManager="*res://scripts/autoload/HitstopManager.cs"
+Visuals="*res://scenes/autoload/Visuals.tscn"
 IntegerResolutionHandler="*res://addons/integer_resolution_handler/integer_resolution_handler.gd"
+HitstopManager="*res://scenes/autoload/HitstopManager.tscn"
 
 [debug]
 
