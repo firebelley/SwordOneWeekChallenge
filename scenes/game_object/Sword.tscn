@@ -191,9 +191,9 @@ rotation = 1.5708
 shape = SubResource( 1 )
 
 [node name="HurtboxComponent" parent="." instance=ExtResource( 24 )]
-visible = false
 collision_layer = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
-position = Vector2( 5, 0 )
+[node name="HurtboxShape" type="CollisionShape2D" parent="HurtboxComponent"]
+unique_name_in_owner = true
+position = Vector2( 6, 0 )
 shape = SubResource( 4 )

@@ -8,19 +8,13 @@ namespace Game.GameObject
 {
     public class Ghoul : KinematicBody2D
     {
-        private const float ACCELERATION_COEFFICIENT = 200f;
         private const float KNOCKBACK_COEFFICIENT = 150f;
-        private const float SPEED = 50f;
         private const float RANGE = 75f;
         private const float KNOCKBACK_FORCE = 250f;
 
         [Signal]
         public delegate void Died();
 
-        [Node]
-        private NavigationAgent2D navigationAgent2D;
-        [Node]
-        private Timer pathfindTimer;
         [Node]
         private Timer attackChargeTimer;
         [Node]
@@ -41,6 +35,12 @@ namespace Game.GameObject
         private CollisionShape2D hurtboxShape;
         [Node]
         private Timer deathTimer;
+        [Node]
+        private VelocityComponent velocityComponent;
+        [Node]
+        private PathfindComponent pathfindComponent;
+        [Node]
+        private PlayerLineOfSightComponent playerLineOfSightComponent;
 
         private enum State
         {
@@ -51,8 +51,6 @@ namespace Game.GameObject
             Death
         }
         private StateMachine<State> stateMachine = new();
-
-        private Vector2 velocity;
 
         public override void _Notification(int what)
         {
@@ -76,7 +74,7 @@ namespace Game.GameObject
             stateMachine.AddState(State.Death, StateDeath);
             stateMachine.SetInitialState(State.Normal);
 
-            navigationAgent2D.Connect("velocity_computed", this, nameof(OnVelocityComputed));
+            pathfindComponent.Connect(nameof(PathfindComponent.VelocityUpdated), this, nameof(OnVelocityUpdated));
             healthComponent.Connect(nameof(HealthComponent.Died), this, nameof(OnDied));
             hurtboxComponent.Connect(nameof(HurtboxComponent.Hit), this, nameof(OnHit));
         }
@@ -84,7 +82,7 @@ namespace Game.GameObject
         public override void _PhysicsProcess(float delta)
         {
             stateMachine.Update();
-            velocity = MoveAndSlide(velocity);
+            velocityComponent.MoveAndSlide();
         }
 
         private void StateNormal()
@@ -93,33 +91,29 @@ namespace Game.GameObject
             var desiredVelocity = Vector2.Zero;
             if (player.GlobalPosition.DistanceSquaredTo(GlobalPosition) > RANGE * RANGE)
             {
-                if (pathfindTimer.IsStopped())
-                {
-                    var targetPos = player?.GlobalPosition ?? GlobalPosition;
-                    pathfindTimer.Start();
-                    navigationAgent2D.SetTargetLocation(targetPos);
-                }
-                desiredVelocity = (navigationAgent2D.GetNextLocation() - GlobalPosition).Normalized() * SPEED;
+                var targetPos = player?.GlobalPosition ?? GlobalPosition;
+                pathfindComponent.SetTargetInterval(targetPos);
+                desiredVelocity = velocityComponent.GetTargetVelocity(pathfindComponent);
             }
 
-            if (attackCooldownTimer.IsStopped() && HasPlayerLineOfSight())
+            if (attackCooldownTimer.IsStopped() && playerLineOfSightComponent.HasLineOfSight())
             {
                 stateMachine.ChangeState(StateAttackCharge);
             }
 
-            AccelerateToVelocity(desiredVelocity, ACCELERATION_COEFFICIENT);
-            navigationAgent2D.SetVelocity(velocity);
+            velocityComponent.AccelerateToVelocity(desiredVelocity);
+            pathfindComponent.SetVelocity(velocityComponent.Velocity);
         }
 
         private void EnterStateKnockback()
         {
-            velocity = (blackboardComponent.GetPrimitiveValue<Vector2>(Constants.V_KNOCKBACK_DIRECTION) ?? Vector2.Zero) * KNOCKBACK_FORCE;
+            velocityComponent.SetVelocity((blackboardComponent.GetPrimitiveValue<Vector2>(Constants.V_KNOCKBACK_DIRECTION) ?? Vector2.Zero) * KNOCKBACK_FORCE);
         }
 
         private void StateKnockback()
         {
-            AccelerateToVelocity(Vector2.Zero, KNOCKBACK_COEFFICIENT);
-            if (velocity.LengthSquared() < 10)
+            velocityComponent.AccelerateToVelocity(Vector2.Zero, KNOCKBACK_COEFFICIENT);
+            if (velocityComponent.Velocity.LengthSquared() < 10)
             {
                 stateMachine.ChangeState(StateNormal);
             }
@@ -141,7 +135,7 @@ namespace Game.GameObject
             {
                 stateMachine.ChangeState(StateAttack);
             }
-            AccelerateToVelocity(Vector2.Zero, ACCELERATION_COEFFICIENT);
+            velocityComponent.AccelerateToVelocity(Vector2.Zero);
         }
 
         private void EnterStateAttack()
@@ -162,7 +156,7 @@ namespace Game.GameObject
         {
             // TODO: have some animation here
             stateMachine.ChangeState(StateNormal);
-            AccelerateToVelocity(Vector2.Zero, ACCELERATION_COEFFICIENT);
+            velocityComponent.AccelerateToVelocity(Vector2.Zero);
         }
 
         private void LeaveStateAttack()
@@ -183,7 +177,7 @@ namespace Game.GameObject
         {
             PlayShakeAnimation();
             PlayBlinkAnimation();
-            AccelerateToVelocity(Vector2.Zero, ACCELERATION_COEFFICIENT);
+            velocityComponent.AccelerateToVelocity(Vector2.Zero);
             if (deathTimer.IsStopped())
             {
                 var node = resourcePreloader.InstanceSceneOrNull<Node2D>("EnemyDeathExplosion");
@@ -192,24 +186,6 @@ namespace Game.GameObject
                 EmitSignal(nameof(Died));
                 QueueFree();
             }
-        }
-
-        // TODO: put in velocity component
-        private void AccelerateToVelocity(Vector2 toVelocity, float coefficient)
-        {
-            velocity = velocity.LinearInterpolate(toVelocity, Mathf.Exp(-coefficient * GetPhysicsProcessDeltaTime()));
-        }
-
-        // TODO: abstract this out
-        private bool HasPlayerLineOfSight()
-        {
-            var playerPos = GetTree().GetFirstNodeInGroup<Sword>()?.GlobalPosition;
-            if (playerPos == null)
-            {
-                return false;
-            }
-            var raycast = GetTree().Root.World2d.DirectSpaceState.Raycast(GlobalPosition, playerPos.Value, null, 1 << 0, true, false);
-            return raycast == null;
         }
 
         // TODO: abstract this out
@@ -232,12 +208,11 @@ namespace Game.GameObject
             }
         }
 
-        // TODO: abstract this out
-        private void OnVelocityComputed(Vector2 vel)
+        private void OnVelocityUpdated(Vector2 velocity)
         {
             if (stateMachine.GetCurrentState() == State.Normal)
             {
-                velocity = vel;
+                velocityComponent.SetVelocity(velocity);
             }
         }
 

@@ -48,6 +48,8 @@ namespace Game.GameObject
         private Particles2D dashParticles;
         [Node]
         private HealthComponent healthComponent;
+        [Node("%HurtboxShape")]
+        private CollisionShape2D hurtboxShape;
 
         private Vector2 previousPosition;
 
@@ -60,6 +62,7 @@ namespace Game.GameObject
 
         public Vector2 TipPosition => tip.GlobalPosition;
         public HealthComponent HealthComponent => healthComponent;
+        public Vector2 CenterMass => hurtboxShape.GlobalPosition;
 
         public override void _Notification(int what)
         {
