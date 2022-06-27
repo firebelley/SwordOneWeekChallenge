@@ -73,7 +73,8 @@ namespace Game.GameObject
         {
             Normal,
             Dash,
-            Attack
+            Attack,
+            Fly
         }
         private StateMachine<State> stateMachine = new();
 
@@ -85,12 +86,12 @@ namespace Game.GameObject
             if (evt.IsActionPressed("launch"))
             {
                 GetTree().SetInputAsHandled();
-                TryLaunch();
+                CallDeferred(nameof(TryLaunch));
             }
             else if (evt.IsActionPressed("dash"))
             {
                 GetTree().SetInputAsHandled();
-                TryDash();
+                CallDeferred(nameof(TryDash));
             }
         }
 
@@ -104,6 +105,7 @@ namespace Game.GameObject
             stateMachine.AddEnterState(State.Attack, EnterStateAttack);
             stateMachine.AddState(State.Attack, StateAttack);
             stateMachine.AddLeaveState(State.Attack, LeaveStateAttack);
+            stateMachine.AddState(State.Fly, StateFly);
             stateMachine.SetInitialState(StateNormal);
 
             animatedSpriteAttack1.Visible = false;
@@ -134,6 +136,10 @@ namespace Game.GameObject
             if (Input.IsActionPressed("attack"))
             {
                 TryAttack();
+            }
+            else if (Input.IsActionPressed("fly"))
+            {
+                stateMachine.ChangeState(StateFly);
             }
         }
 
@@ -258,6 +264,23 @@ namespace Game.GameObject
             animatedSpriteAttack3.Visible = false;
         }
 
+        private void StateFly()
+        {
+            ApplyTorqueTowardMouse();
+            // ApplyCentralImpulse(Vector2.Right.Rotated(Rotation) * 1000f);
+            // LinearVelocity = LinearVelocity.LimitLength(800f);
+            LinearVelocity = Vector2.Right.Rotated(Rotation) * 250f;
+
+            if (!Input.IsActionPressed("fly"))
+            {
+                stateMachine.ChangeState(StateNormal);
+            }
+            else if (Input.IsActionPressed("attack"))
+            {
+                TryAttack();
+            }
+        }
+
         private void ApplyTorqueTowardMouse()
         {
             var currentAngle = Vector2.Right.Rotated(Rotation);
@@ -281,7 +304,7 @@ namespace Game.GameObject
 
         private void TryLaunch()
         {
-            if (stateMachine.GetCurrentState() == State.Normal && launchTimer.IsStopped())
+            if (launchTimer.IsStopped())
             {
                 LinearVelocity = Vector2.Zero;
                 ApplyCentralImpulse(Vector2.Up * LAUNCH_FORCE);
@@ -292,7 +315,7 @@ namespace Game.GameObject
 
         private void TryDash()
         {
-            if ((stateMachine.GetCurrentState() == State.Normal || stateMachine.GetCurrentState() == State.Attack) && dashTimer.IsStopped())
+            if (dashTimer.IsStopped())
             {
                 stateMachine.ChangeState(StateDash);
             }
@@ -300,7 +323,7 @@ namespace Game.GameObject
 
         private void TryAttack()
         {
-            if ((stateMachine.GetCurrentState() == State.Normal || stateMachine.GetCurrentState() == State.Dash) && attackIntervalTimer.IsStopped())
+            if (attackIntervalTimer.IsStopped())
             {
                 stateMachine.ChangeState(StateAttack);
             }
