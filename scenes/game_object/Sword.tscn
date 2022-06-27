@@ -52,8 +52,8 @@
 bounce = 0.2
 
 [sub_resource type="Curve" id=7]
-max_value = 1.5
-_data = [ Vector2( 0, 1.5 ), 0.0, 0.0, 0, 0, Vector2( 1, 0 ), 0.0, 0.0, 0, 0 ]
+max_value = 1.25
+_data = [ Vector2( 0, 1.25 ), 0.0, 0.0, 0, 0, Vector2( 1, 0 ), 0.0, 0.0, 0, 0 ]
 
 [sub_resource type="CurveTexture" id=8]
 curve = SubResource( 7 )
@@ -139,8 +139,7 @@ one_shot = true
 [node name="DashParticles" type="Particles2D" parent="."]
 unique_name_in_owner = true
 position = Vector2( 11, 1 )
-emitting = false
-amount = 20
+amount = 30
 lifetime = 0.15
 local_coords = false
 draw_order = 1
