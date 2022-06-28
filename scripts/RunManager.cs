@@ -49,6 +49,11 @@ namespace Game
 
         private void ShowLevelSelector()
         {
+            foreach (var roomManager in roomManagers)
+            {
+                roomManager.Reset();
+            }
+
             ClearNodes();
             runConfig.CurrentHealth = runConfig.MaxHealth;
             var levelSelector = resourcePreloader.InstanceSceneOrNull<LevelSelector>();

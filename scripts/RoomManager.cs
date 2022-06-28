@@ -64,6 +64,12 @@ namespace Game
             waveIntervalTimer.Connect("timeout", this, nameof(OnWaveIntervalTimerTimeout));
         }
 
+        public void Reset()
+        {
+            enemyCount = 0;
+            currentWave = 0;
+        }
+
         public void StartRoom(RunConfig runConfig, RoomConfig roomConfig)
         {
             BeginNewLevel();
