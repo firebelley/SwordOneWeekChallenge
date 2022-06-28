@@ -49,7 +49,7 @@
 [ext_resource path="res://scenes/component/HealthComponent.tscn" type="PackedScene" id=47]
 
 [sub_resource type="PhysicsMaterial" id=2]
-bounce = 0.2
+friction = 0.1
 
 [sub_resource type="Curve" id=7]
 max_value = 1.25

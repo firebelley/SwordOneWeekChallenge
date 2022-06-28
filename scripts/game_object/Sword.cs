@@ -54,7 +54,7 @@ namespace Game.GameObject
         private Vector2 previousPosition;
 
         private const float LAUNCH_FORCE = 300f;
-        private const int TORQUE_COEFFICIENT = 200_000;
+        private const int TORQUE_COEFFICIENT = 400_000;
         private const float DASH_FORCE = 1500f;
         private const float ATTACK_FORCE = 1000f;
         private const float DASH_LINEAR_DAMP = 12f;
