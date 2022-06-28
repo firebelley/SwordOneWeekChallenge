@@ -95,9 +95,9 @@ namespace Game
             for (int i = 0; i < 2 + currentWave; i++)
             {
                 var enemyIndex = MathUtil.RNG.RandiRange(0, enemyPool.Count - 1);
-                var enemy = enemyPool[enemyIndex].InstanceOrNull<Ghoul>();
+                var enemy = enemyPool[enemyIndex].InstanceOrNull<Enemy>();
                 currentLevel.Entities.AddChild(enemy);
-                enemy.Connect(nameof(Ghoul.Died), this, nameof(OnEnemyDied));
+                enemy.Connect(nameof(Enemy.Died), this, nameof(OnEnemyDied));
 
                 var tileIndex = MathUtil.RNG.RandiRange(0, currentLevel.FreeTiles.Count - 1);
                 var tilePos = currentLevel.FreeTiles[tileIndex];

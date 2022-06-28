@@ -6,15 +6,12 @@ using GodotUtilities.Logic;
 
 namespace Game.GameObject
 {
-    public class Ghoul : KinematicBody2D
+    public class Ghoul : Enemy
     {
         private const float KNOCKBACK_COEFFICIENT = 5f;
         private const float DEATH_COEFFICIENT = 3f;
         private const float RANGE = 75f;
         private const float KNOCKBACK_FORCE = 250f;
-
-        [Signal]
-        public delegate void Died();
 
         [Node]
         private Timer attackChargeTimer;

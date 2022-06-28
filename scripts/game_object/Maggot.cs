@@ -7,7 +7,7 @@ using GodotUtilities.Logic;
 
 namespace Game.GameObject
 {
-    public class Maggot : KinematicBody2D
+    public class Maggot : Enemy
     {
         private const float RANGE = 50f;
         private const float KNOCKBACK_FORCE = 250f;
@@ -166,6 +166,8 @@ namespace Game.GameObject
             AddChild(attackCharge);
             attackCharge.GlobalPosition = GlobalPosition;
             attackCharge.SetDuration(1f / attackChargeTimer.WaitTime);
+
+            blackboardComponent.SetValue(Constants.V_ATTACK_DIRECTION, finalDirection);
         }
 
         private void StateAttackCharge()
@@ -179,7 +181,9 @@ namespace Game.GameObject
 
         private void EnterStateAttack()
         {
-
+            var laser = resourcePreloader.InstanceSceneOrNull<LaserAttack>();
+            AddChild(laser);
+            laser.SetDirection(blackboardComponent.GetPrimitiveValue<Vector2>(Constants.V_ATTACK_DIRECTION) ?? Vector2.Right);
         }
 
         private void StateAttack()
@@ -202,16 +206,36 @@ namespace Game.GameObject
 
         private void StateDeath()
         {
-            // PlayShakeAnimation();
-            // PlayBlinkAnimation();
+            PlayShakeAnimation();
+            PlayBlinkAnimation();
             velocityComponent.AccelerateToVelocity(Vector2.Zero, DEATH_COEFFICIENT);
             if (deathTimer.IsStopped())
             {
                 var node = resourcePreloader.InstanceSceneOrNull<Node2D>("EnemyDeathExplosion");
                 GetParent().AddChild(node);
                 node.GlobalPosition = GlobalPosition;
-                // EmitSignal(nameof(Died));
+                EmitSignal(nameof(Died));
                 QueueFree();
+            }
+        }
+
+        // TODO: abstract this out
+        private void PlayShakeAnimation()
+        {
+            if (animationPlayer.CurrentAnimation != "shake" || !animationPlayer.IsPlaying())
+            {
+                animationPlayer.PlaybackSpeed = 1f / .1f;
+                animationPlayer.Play("shake");
+            }
+        }
+
+        // TODO: abstract this out
+        private void PlayBlinkAnimation()
+        {
+            if (blinkAnimationPlayer.CurrentAnimation != "blink" || !blinkAnimationPlayer.IsPlaying())
+            {
+                blinkAnimationPlayer.PlaybackSpeed = 1f / .15f;
+                blinkAnimationPlayer.Play("blink");
             }
         }
 
@@ -246,6 +270,7 @@ namespace Game.GameObject
         private static class Constants
         {
             public static readonly string V_KNOCKBACK_DIRECTION = "v_knockback_direction";
+            public static readonly string V_ATTACK_DIRECTION = "v_attack_direction";
         }
     }
 }
