@@ -11,6 +11,8 @@ namespace Game.Component
         [Node]
         private Timer timer;
 
+        private float defaultWaitTime;
+
         public override void _Notification(int what)
         {
             if (what == NotificationInstanced)
@@ -21,12 +23,15 @@ namespace Game.Component
 
         public override void _Ready()
         {
+            defaultWaitTime = timer.WaitTime;
             Connect("velocity_computed", this, nameof(OnVelocityComputed));
         }
 
-        public void SetTargetInterval(Vector2 targetPos)
+        public void SetTargetInterval(Vector2 targetPos, float? waitTime = null)
         {
-            if (!timer.IsStopped()) return;
+            if (!timer.IsStopped() && !IsNavigationFinished()) return;
+
+            timer.WaitTime = waitTime ?? defaultWaitTime;
             timer.Start();
             SetTargetLocation(targetPos);
         }

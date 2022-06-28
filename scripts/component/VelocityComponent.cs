@@ -5,7 +5,7 @@ namespace Game.Component
     public class VelocityComponent : Node
     {
         [Export]
-        private float accelerationCoefficient = 200f;
+        private float accelerationCoefficient = 1f;
         [Export]
         private float speed = 50f;
 
@@ -13,7 +13,7 @@ namespace Game.Component
 
         public void AccelerateToVelocity(Vector2 toVelocity, float coefficient)
         {
-            Velocity = Velocity.LinearInterpolate(toVelocity, Mathf.Exp(-coefficient * GetPhysicsProcessDeltaTime()));
+            Velocity = Velocity.LinearInterpolate(toVelocity, 1f - Mathf.Exp(-coefficient * GetPhysicsProcessDeltaTime()));
         }
 
         public void AccelerateToVelocity(Vector2 toVelocity)

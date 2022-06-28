@@ -10,6 +10,9 @@ namespace Game.GameObject
     public class Maggot : KinematicBody2D
     {
         private const float RANGE = 50f;
+        private const float KNOCKBACK_FORCE = 250f;
+        private const float KNOCKBACK_COEFFICIENT = 3f;
+        private const float DEATH_COEFFICIENT = 3f;
 
         [Node]
         private Timer attackChargeTimer;
@@ -38,7 +41,7 @@ namespace Game.GameObject
         [Node]
         private PlayerLineOfSightComponent playerLineOfSightComponent;
         [Node]
-        private RayCast2D laserCast;
+        private Sprite sprite;
 
         private enum State
         {
@@ -68,19 +71,27 @@ namespace Game.GameObject
             stateMachine.AddEnterState(State.Attack, EnterStateAttack);
             stateMachine.AddState(State.Attack, StateAttack);
             stateMachine.AddLeaveState(State.Attack, LeaveStateAttack);
-            // stateMachine.AddEnterState(State.Death, EnterStateDeath);
-            // stateMachine.AddState(State.Death, StateDeath);
+            stateMachine.AddEnterState(State.Death, EnterStateDeath);
+            stateMachine.AddState(State.Death, StateDeath);
             stateMachine.SetInitialState(State.Normal);
 
             pathfindComponent.Connect(nameof(PathfindComponent.VelocityUpdated), this, nameof(OnVelocityUpdated));
             healthComponent.Connect(nameof(HealthComponent.Died), this, nameof(OnDied));
             hurtboxComponent.Connect(nameof(HurtboxComponent.Hit), this, nameof(OnHit));
+
+            StartAttackCooldown();
         }
 
         public override void _PhysicsProcess(float delta)
         {
             stateMachine.Update();
             velocityComponent.MoveAndSlide();
+        }
+
+        private void StartAttackCooldown()
+        {
+            attackCooldownTimer.WaitTime = MathUtil.RNG.RandfRange(2f, 4f);
+            attackCooldownTimer.Start();
         }
 
         private void StateNormal()
@@ -90,14 +101,20 @@ namespace Game.GameObject
             if ((player?.GlobalPosition ?? GlobalPosition).DistanceSquaredTo(GlobalPosition) < RANGE * RANGE)
             {
                 // TODO: flee!
-                // this.GetAncestor<BaseLevel>().FreeTiles;
+                var freeTiles = this.GetAncestor<BaseLevel>()?.FreeTiles;
+                if (freeTiles != null)
+                {
+                    var targetTile = MathUtil.RNG.RandiRange(0, freeTiles.Count - 1);
+                    pathfindComponent.SetTargetInterval((freeTiles[targetTile] * 16f) + (Vector2.One * 8f), 2f);
+                }
             }
             else
             {
                 var targetPos = player?.GlobalPosition ?? GlobalPosition;
                 pathfindComponent.SetTargetInterval(targetPos);
-                desiredVelocity = velocityComponent.GetTargetVelocity(pathfindComponent);
             }
+
+            desiredVelocity = velocityComponent.GetTargetVelocity(pathfindComponent);
 
             if (attackCooldownTimer.IsStopped() && playerLineOfSightComponent.HasLineOfSight())
             {
@@ -106,16 +123,22 @@ namespace Game.GameObject
 
             velocityComponent.AccelerateToVelocity(desiredVelocity);
             pathfindComponent.SetVelocity(velocityComponent.Velocity);
+
+            UpdateFacing();
         }
 
         private void EnterStateKnockback()
         {
-
+            velocityComponent.SetVelocity((blackboardComponent.GetPrimitiveValue<Vector2>(Constants.V_KNOCKBACK_DIRECTION) ?? Vector2.Zero) * KNOCKBACK_FORCE);
         }
 
         private void StateKnockback()
         {
-
+            velocityComponent.AccelerateToVelocity(Vector2.Zero, KNOCKBACK_COEFFICIENT);
+            if (velocityComponent.Velocity.LengthSquared() < 100)
+            {
+                stateMachine.ChangeState(StateNormal);
+            }
         }
 
         private void EnterStateAttackCharge()
@@ -138,6 +161,11 @@ namespace Game.GameObject
             AddChild(laser);
             laser.SetDirection(finalDirection);
             attackChargeTimer.Start();
+
+            var attackCharge = resourcePreloader.InstanceSceneOrNull<AttackCharge>();
+            AddChild(attackCharge);
+            attackCharge.GlobalPosition = GlobalPosition;
+            attackCharge.SetDuration(1f / attackChargeTimer.WaitTime);
         }
 
         private void StateAttackCharge()
@@ -161,12 +189,40 @@ namespace Game.GameObject
 
         private void LeaveStateAttack()
         {
-            attackCooldownTimer.Start();
+            StartAttackCooldown();
+        }
+
+        private void EnterStateDeath()
+        {
+            deathTimer.Start();
+            hurtboxShape.Disabled = true;
+            var node = resourcePreloader.InstanceSceneOrNull<Node2D>("EnemyDeath");
+            AddChild(node);
+        }
+
+        private void StateDeath()
+        {
+            // PlayShakeAnimation();
+            // PlayBlinkAnimation();
+            velocityComponent.AccelerateToVelocity(Vector2.Zero, DEATH_COEFFICIENT);
+            if (deathTimer.IsStopped())
+            {
+                var node = resourcePreloader.InstanceSceneOrNull<Node2D>("EnemyDeathExplosion");
+                GetParent().AddChild(node);
+                node.GlobalPosition = GlobalPosition;
+                // EmitSignal(nameof(Died));
+                QueueFree();
+            }
+        }
+
+        private void UpdateFacing()
+        {
+            sprite.FlipH = velocityComponent.Velocity.x < 0;
         }
 
         private void OnDied()
         {
-
+            stateMachine.ChangeState(StateDeath);
         }
 
         private void OnVelocityUpdated(Vector2 velocity)
@@ -177,9 +233,19 @@ namespace Game.GameObject
             }
         }
 
-        private void OnHit()
+        private void OnHit(HitboxComponent hitboxComponent)
         {
+            if (hitboxComponent.ApplyKnockback)
+            {
+                blackboardComponent.SetValue(Constants.V_KNOCKBACK_DIRECTION, Vector2.Right.Rotated(hitboxComponent.Rotation));
+                stateMachine.ChangeState(StateKnockback);
+            }
+            healthComponent.Damage(1);
+        }
 
+        private static class Constants
+        {
+            public static readonly string V_KNOCKBACK_DIRECTION = "v_knockback_direction";
         }
     }
 }

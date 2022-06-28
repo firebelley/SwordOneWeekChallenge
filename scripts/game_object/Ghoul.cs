@@ -8,7 +8,8 @@ namespace Game.GameObject
 {
     public class Ghoul : KinematicBody2D
     {
-        private const float KNOCKBACK_COEFFICIENT = 150f;
+        private const float KNOCKBACK_COEFFICIENT = 5f;
+        private const float DEATH_COEFFICIENT = 3f;
         private const float RANGE = 75f;
         private const float KNOCKBACK_FORCE = 250f;
 
@@ -41,6 +42,8 @@ namespace Game.GameObject
         private PathfindComponent pathfindComponent;
         [Node]
         private PlayerLineOfSightComponent playerLineOfSightComponent;
+        [Node]
+        private Sprite sprite;
 
         private enum State
         {
@@ -77,6 +80,8 @@ namespace Game.GameObject
             pathfindComponent.Connect(nameof(PathfindComponent.VelocityUpdated), this, nameof(OnVelocityUpdated));
             healthComponent.Connect(nameof(HealthComponent.Died), this, nameof(OnDied));
             hurtboxComponent.Connect(nameof(HurtboxComponent.Hit), this, nameof(OnHit));
+
+            StartAttackCooldown();
         }
 
         public override void _PhysicsProcess(float delta)
@@ -85,11 +90,17 @@ namespace Game.GameObject
             velocityComponent.MoveAndSlide();
         }
 
+        private void StartAttackCooldown()
+        {
+            attackCooldownTimer.WaitTime = MathUtil.RNG.RandfRange(1.5f, 2.5f);
+            attackCooldownTimer.Start();
+        }
+
         private void StateNormal()
         {
             var player = GetTree().GetFirstNodeInGroup<Sword>();
             var desiredVelocity = Vector2.Zero;
-            if (player.GlobalPosition.DistanceSquaredTo(GlobalPosition) > RANGE * RANGE)
+            if (player?.GlobalPosition.DistanceSquaredTo(GlobalPosition) > RANGE * RANGE)
             {
                 var targetPos = player?.GlobalPosition ?? GlobalPosition;
                 pathfindComponent.SetTargetInterval(targetPos);
@@ -103,6 +114,7 @@ namespace Game.GameObject
 
             velocityComponent.AccelerateToVelocity(desiredVelocity);
             pathfindComponent.SetVelocity(velocityComponent.Velocity);
+            UpdateFacing();
         }
 
         private void EnterStateKnockback()
@@ -113,7 +125,7 @@ namespace Game.GameObject
         private void StateKnockback()
         {
             velocityComponent.AccelerateToVelocity(Vector2.Zero, KNOCKBACK_COEFFICIENT);
-            if (velocityComponent.Velocity.LengthSquared() < 10)
+            if (velocityComponent.Velocity.LengthSquared() < 100)
             {
                 stateMachine.ChangeState(StateNormal);
             }
@@ -161,8 +173,7 @@ namespace Game.GameObject
 
         private void LeaveStateAttack()
         {
-            attackCooldownTimer.WaitTime = MathUtil.RNG.RandfRange(3f, 5f);
-            attackCooldownTimer.Start();
+            StartAttackCooldown();
         }
 
         private void EnterStateDeath()
@@ -177,7 +188,7 @@ namespace Game.GameObject
         {
             PlayShakeAnimation();
             PlayBlinkAnimation();
-            velocityComponent.AccelerateToVelocity(Vector2.Zero);
+            velocityComponent.AccelerateToVelocity(Vector2.Zero, DEATH_COEFFICIENT);
             if (deathTimer.IsStopped())
             {
                 var node = resourcePreloader.InstanceSceneOrNull<Node2D>("EnemyDeathExplosion");
@@ -206,6 +217,11 @@ namespace Game.GameObject
                 blinkAnimationPlayer.PlaybackSpeed = 1f / .15f;
                 blinkAnimationPlayer.Play("blink");
             }
+        }
+
+        private void UpdateFacing()
+        {
+            sprite.FlipH = velocityComponent.Velocity.x < 0;
         }
 
         private void OnVelocityUpdated(Vector2 velocity)

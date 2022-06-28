@@ -113,6 +113,7 @@ one_shot = true
 
 [node name="AttackCooldownTimer" type="Timer" parent="."]
 process_mode = 0
+wait_time = 2.0
 one_shot = true
 
 [node name="DeathTimer" type="Timer" parent="."]
@@ -120,7 +121,7 @@ process_mode = 0
 one_shot = true
 
 [node name="PathfindComponent" parent="." instance=ExtResource( 2 )]
-target_desired_distance = 75.0
+max_speed = 200.0
 
 [node name="HealthComponent" parent="." instance=ExtResource( 19 )]
 maxHealth = 5
@@ -128,7 +129,7 @@ maxHealth = 5
 [node name="BlackboardComponent" parent="." instance=ExtResource( 3 )]
 
 [node name="VelocityComponent" parent="." instance=ExtResource( 6 )]
-speed = 100.0
+speed = 200.0
 
 [node name="HealthBarComponent" parent="." instance=ExtResource( 5 )]
 margin_top = -21.0

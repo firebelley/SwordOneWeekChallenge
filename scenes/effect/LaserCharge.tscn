@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://scripts/effect/LaserCharge.cs" type="Script" id=1]
+[ext_resource path="res://scenes/component/HitboxComponent.tscn" type="PackedScene" id=2]
 
 [sub_resource type="Animation" id=2]
 length = 0.001
@@ -40,6 +41,30 @@ tracks/2/keys = {
 "update": 0,
 "values": [ Color( 1, 1, 1, 1 ) ]
 }
+tracks/3/type = "value"
+tracks/3/path = NodePath("DamageLine:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ false ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("HitboxComponent/HitboxShape:disabled")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ true ]
+}
 
 [sub_resource type="Animation" id=1]
 resource_name = "default"
@@ -54,7 +79,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.2, 0.4, 0.6, 0.8, 1 ),
 "transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
 "update": 0,
-"values": [ 0.0, 1.0, 2.0, 3.0, 2.0, 3.0 ]
+"values": [ 0.0, 1.0, 2.0, 1.0, 2.0, 1.0 ]
 }
 tracks/1/type = "value"
 tracks/1/path = NodePath("Line2D:modulate")
@@ -82,9 +107,38 @@ tracks/2/keys = {
 "method": "queue_free"
 } ]
 }
+tracks/3/type = "value"
+tracks/3/path = NodePath("DamageLine:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0, 1, 1.3 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ false, true, false ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("HitboxComponent/HitboxShape:disabled")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0, 1, 1.1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ true, false, true ]
+}
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 10, 2 )
 
 [node name="LaserCharge" type="Node2D"]
 script = ExtResource( 1 )
+horizontalModulate = Color( 1.25, 1.25, 1.25, 1 )
+verticalModulate = Color( 1.5, 1.5, 1.5, 1 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 autoplay = "default"
@@ -96,4 +150,16 @@ points = PoolVector2Array( 0, 0, 1, 0 )
 width = 0.0
 default_color = Color( 0.92549, 0.152941, 0.247059, 1 )
 
+[node name="DamageLine" type="Line2D" parent="."]
+visible = false
+width = 4.0
+default_color = Color( 0.92549, 0.152941, 0.247059, 1 )
+
 [node name="RayCast2D" type="RayCast2D" parent="."]
+
+[node name="HitboxComponent" parent="." instance=ExtResource( 2 )]
+
+[node name="HitboxShape" type="CollisionShape2D" parent="HitboxComponent"]
+unique_name_in_owner = true
+shape = SubResource( 3 )
+disabled = true
