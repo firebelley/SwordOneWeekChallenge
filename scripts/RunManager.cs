@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Game.Data;
-using Game.Data.Perk;
 using Game.UI;
 using Godot;
 using GodotUtilities;
@@ -51,21 +50,22 @@ namespace Game
         private void ShowLevelSelector()
         {
             ClearNodes();
+            runConfig.CurrentHealth = runConfig.MaxHealth;
             var levelSelector = resourcePreloader.InstanceSceneOrNull<LevelSelector>();
             AddChild(levelSelector);
             levelSelector.SetupData(runConfig);
             levelSelector.Connect(nameof(LevelSelector.RoomSelected), this, nameof(OnRoomSelected));
         }
 
-        private void ShowPerkChoice()
-        {
-            ClearNodes();
-            var perkChoice = resourcePreloader.InstanceSceneOrNull<PerkChoice>();
-            AddChild(perkChoice);
-            var perks = runConfig.GetPerkOptions();
-            perkChoice.SetChoices(perks);
-            perkChoice.Connect(nameof(PerkChoice.PerkSelected), this, nameof(OnPerkSelected));
-        }
+        // private void ShowPerkChoice()
+        // {
+        //     ClearNodes();
+        //     var perkChoice = resourcePreloader.InstanceSceneOrNull<PerkChoice>();
+        //     AddChild(perkChoice);
+        //     var perks = runConfig.GetPerkOptions();
+        //     perkChoice.SetChoices(perks);
+        //     perkChoice.Connect(nameof(PerkChoice.PerkSelected), this, nameof(OnPerkSelected));
+        // }
 
         private void OnRoomSelected(int roomIndex)
         {
@@ -76,21 +76,21 @@ namespace Game
 
         private void OnRoomComplete()
         {
-            ShowPerkChoice();
+            runConfig.Level++;
+            ShowLevelSelector();
         }
 
         private void OnRoomFailed()
         {
-            runConfig = new();
             ShowLevelSelector();
         }
 
-        private void OnPerkSelected(PerkType perk)
-        {
-            runConfig.AddActivePerk(perk);
-            runConfig.Level++;
-            ShowLevelSelector();
-        }
+        // private void OnPerkSelected(PerkType perk)
+        // {
+        //     runConfig.AddActivePerk(perk);
+        //     runConfig.Level++;
+        //     ShowLevelSelector();
+        // }
 
         private void OnSwordHealthChanged(int newHealth)
         {
