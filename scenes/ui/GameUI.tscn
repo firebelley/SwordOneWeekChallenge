@@ -15,7 +15,7 @@ theme = ExtResource( 3 )
 custom_constants/margin_bottom = 4
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
-margin_left = 588.0
+margin_left = 608.0
 margin_top = 340.0
 margin_right = 624.0
 margin_bottom = 356.0
@@ -23,17 +23,9 @@ mouse_filter = 2
 size_flags_horizontal = 8
 size_flags_vertical = 8
 
-[node name="LaunchIndicator" type="ColorRect" parent="MarginContainer/HBoxContainer"]
-unique_name_in_owner = true
-margin_right = 16.0
-margin_bottom = 16.0
-rect_min_size = Vector2( 16, 16 )
-mouse_filter = 2
-
 [node name="DashIndicator" type="ColorRect" parent="MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
-margin_left = 20.0
-margin_right = 36.0
+margin_right = 16.0
 margin_bottom = 16.0
 rect_min_size = Vector2( 16, 16 )
 mouse_filter = 2

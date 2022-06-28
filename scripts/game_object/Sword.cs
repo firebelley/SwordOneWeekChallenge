@@ -8,8 +8,6 @@ namespace Game.GameObject
     public class Sword : RigidBody2D
     {
         [Signal]
-        public delegate void LaunchTimerStarted(float time);
-        [Signal]
         public delegate void DashTimerStarted(float time);
         [Signal]
         public delegate void DashEnded();
@@ -54,7 +52,7 @@ namespace Game.GameObject
         private Vector2 previousPosition;
 
         private const float LAUNCH_FORCE = 300f;
-        private const int TORQUE_COEFFICIENT = 400_000;
+        private const int TORQUE_COEFFICIENT = 600_000;
         private const float DASH_FORCE = 1500f;
         private const float ATTACK_FORCE = 1000f;
         private const float DASH_LINEAR_DAMP = 12f;
@@ -86,12 +84,7 @@ namespace Game.GameObject
 
         public override void _UnhandledInput(InputEvent evt)
         {
-            if (evt.IsActionPressed("launch"))
-            {
-                GetTree().SetInputAsHandled();
-                CallDeferred(nameof(TryLaunch));
-            }
-            else if (evt.IsActionPressed("dash"))
+            if (evt.IsActionPressed("dash"))
             {
                 GetTree().SetInputAsHandled();
                 CallDeferred(nameof(TryDash));
@@ -108,7 +101,9 @@ namespace Game.GameObject
             stateMachine.AddEnterState(State.Attack, EnterStateAttack);
             stateMachine.AddState(State.Attack, StateAttack);
             stateMachine.AddLeaveState(State.Attack, LeaveStateAttack);
+            stateMachine.AddEnterState(State.Fly, EnterStateFly);
             stateMachine.AddState(State.Fly, StateFly);
+            stateMachine.AddLeaveState(State.Fly, LeaveStateFly);
             stateMachine.SetInitialState(StateNormal);
 
             animatedSpriteAttack1.Visible = false;
@@ -267,12 +262,21 @@ namespace Game.GameObject
             animatedSpriteAttack3.Visible = false;
         }
 
+        private void EnterStateFly()
+        {
+            LinearDamp = 11f;
+        }
+
         private void StateFly()
         {
+            CheckInsideTerrain();
             ApplyTorqueTowardMouse();
-            // ApplyCentralImpulse(Vector2.Right.Rotated(Rotation) * 1000f);
+            AppliedForce = Vector2.Right.Rotated(Rotation) * 3000f;
+
+            // ApplyCentralImpulse(Vector2.Right.Rotated(Rotation) * 100f);
+
             // LinearVelocity = LinearVelocity.LimitLength(800f);
-            LinearVelocity = Vector2.Right.Rotated(Rotation) * 250f;
+            // LinearVelocity = LinearVelocity.LimitLength(250f);
 
             if (!Input.IsActionPressed("fly"))
             {
@@ -282,6 +286,12 @@ namespace Game.GameObject
             {
                 TryAttack();
             }
+        }
+
+        private void LeaveStateFly()
+        {
+            LinearDamp = 0f;
+            AppliedForce = Vector2.Zero;
         }
 
         private void ApplyTorqueTowardMouse()
@@ -303,17 +313,6 @@ namespace Game.GameObject
                 return true;
             }
             return false;
-        }
-
-        private void TryLaunch()
-        {
-            if (launchTimer.IsStopped())
-            {
-                LinearVelocity = Vector2.Zero;
-                ApplyCentralImpulse(Vector2.Up * LAUNCH_FORCE);
-                launchTimer.Start();
-                EmitSignal(nameof(LaunchTimerStarted), launchTimer.WaitTime);
-            }
         }
 
         private void TryDash()

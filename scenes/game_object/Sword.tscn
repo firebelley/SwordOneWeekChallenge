@@ -105,15 +105,11 @@ continuous_cd = 2
 contacts_reported = 2
 contact_monitor = true
 can_sleep = false
-angular_damp = 5.0
+angular_damp = 10.0
 script = ExtResource( 2 )
 
 [node name="ResourcePreloader" type="ResourcePreloader" parent="."]
 resources = [ PoolStringArray( "SwordHit", "SwordHitbox" ), [ ExtResource( 25 ), ExtResource( 23 ) ] ]
-
-[node name="LaunchTimer" type="Timer" parent="."]
-process_mode = 0
-one_shot = true
 
 [node name="DashTimer" type="Timer" parent="."]
 process_mode = 0
