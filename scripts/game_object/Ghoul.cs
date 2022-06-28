@@ -89,7 +89,7 @@ namespace Game.GameObject
 
         private void StartAttackCooldown()
         {
-            attackCooldownTimer.WaitTime = MathUtil.RNG.RandfRange(1.5f, 2.5f);
+            attackCooldownTimer.WaitTime = MathUtil.RNG.RandfRange(1f, 2f);
             attackCooldownTimer.Start();
         }
 

@@ -12,6 +12,8 @@ namespace Game.GameObject
         private Timer effectSpawnTimer;
         [Node]
         private ResourcePreloader resourcePreloader;
+        [Node]
+        private AnimationPlayer animationPlayer;
 
         private Vector2 velocity;
 
@@ -34,7 +36,7 @@ namespace Game.GameObject
             var collision = MoveAndCollide(velocity * delta);
             if (collision != null)
             {
-                QueueFree();
+                animationPlayer.Play("die");
             }
         }
 

@@ -3,11 +3,11 @@
 [ext_resource path="res://scripts/component/PathfindComponent.cs" type="Script" id=1]
 
 [node name="PathfindComponent" type="NavigationAgent2D"]
+path_desired_distance = 8.0
 target_desired_distance = 8.0
 radius = 20.0
-neighbor_dist = 100.0
+neighbor_dist = 50.0
 time_horizon = 1.0
-max_speed = 50.0
 path_max_distance = 32.0
 avoidance_enabled = true
 script = ExtResource( 1 )
