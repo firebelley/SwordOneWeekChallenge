@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Data;
 using Game.Data.Perk;
 using Game.UI;
@@ -13,6 +14,8 @@ namespace Game
 
         private RunConfig runConfig;
 
+        private List<RoomManager> roomManagers = new();
+
         public override void _Notification(int what)
         {
             if (what == NotificationInstanced)
@@ -23,6 +26,14 @@ namespace Game
 
         public override void _Ready()
         {
+            foreach (var child in this.GetChildren<Node>())
+            {
+                if (child is RoomManager roomManager)
+                {
+                    roomManagers.Add(roomManager);
+                }
+            }
+
             runConfig = new();
             ShowLevelSelector();
         }
@@ -30,7 +41,7 @@ namespace Game
         private void ClearNodes()
         {
             this.GetFirstNodeOfType<LevelSelector>()?.QueueFree();
-            this.GetFirstNodeOfType<RoomManager>()?.QueueFree();
+            // this.GetFirstNodeOfType<RoomManager>()?.QueueFree();
             this.GetFirstNodeOfType<PerkChoice>()?.QueueFree();
         }
 
@@ -56,9 +67,7 @@ namespace Game
         private void OnRoomSelected(int roomIndex)
         {
             ClearNodes();
-            var roomManager = resourcePreloader.InstanceSceneOrNull<RoomManager>();
-            // TODO: transition elegantly
-            AddChild(roomManager);
+            var roomManager = roomManagers[roomIndex];
             roomManager.Connect(nameof(RoomManager.RoomComplete), this, nameof(OnRoomComplete));
             roomManager.Connect(nameof(RoomManager.RoomFailed), this, nameof(OnRoomFailed));
             roomManager.Connect(nameof(RoomManager.SwordHealthChanged), this, nameof(OnSwordHealthChanged));

@@ -20,9 +20,15 @@ namespace Game
         public delegate void SwordHealthChanged(int newHealth);
 
         [Export]
-        private Godot.Collections.Array<PackedScene> levelPool = new();
+        private PackedScene level;
         [Export]
-        private Godot.Collections.Array<PackedScene> enemyPool = new();
+        private int numGhouls;
+        [Export]
+        private int ghoulsIncrease;
+        [Export]
+        private int numMaggots;
+        [Export]
+        private int maggotsIncrease;
 
         [Node]
         private Timer waveTimer;
@@ -34,6 +40,8 @@ namespace Game
         private ScreenBanner incomingScreenBanner;
         [Node]
         private ScreenBanner completeScreenBanner;
+        [Node]
+        private ResourcePreloader resourcePreloader;
 
         private BaseLevel currentLevel;
         private int enemyCount;
@@ -75,8 +83,6 @@ namespace Game
 
         private void SetupLevel()
         {
-            var levelIndex = MathUtil.RNG.RandiRange(0, levelPool.Count - 1);
-            var level = levelPool[levelIndex];
             currentLevel = level.InstanceOrNull<BaseLevel>();
             AddChild(currentLevel);
         }
@@ -92,13 +98,22 @@ namespace Game
 
         private void SpawnEnemies()
         {
-            for (int i = 0; i < 2 + currentWave; i++)
+            for (int i = 0; i < numGhouls + (ghoulsIncrease * (currentWave - 1)); i++)
             {
-                var enemyIndex = MathUtil.RNG.RandiRange(0, enemyPool.Count - 1);
-                var enemy = enemyPool[enemyIndex].InstanceOrNull<Enemy>();
+                var enemy = resourcePreloader.InstanceSceneOrNull<Ghoul>();
                 currentLevel.Entities.AddChild(enemy);
                 enemy.Connect(nameof(Enemy.Died), this, nameof(OnEnemyDied));
+                var tileIndex = MathUtil.RNG.RandiRange(0, currentLevel.FreeTiles.Count - 1);
+                var tilePos = currentLevel.FreeTiles[tileIndex];
+                enemy.GlobalPosition = (tilePos * 16f) + (Vector2.One * 8f);
+                enemyCount++;
+            }
 
+            for (int i = 0; i < numMaggots + (maggotsIncrease * (currentWave - 1)); i++)
+            {
+                var enemy = resourcePreloader.InstanceSceneOrNull<Maggot>();
+                currentLevel.Entities.AddChild(enemy);
+                enemy.Connect(nameof(Enemy.Died), this, nameof(OnEnemyDied));
                 var tileIndex = MathUtil.RNG.RandiRange(0, currentLevel.FreeTiles.Count - 1);
                 var tilePos = currentLevel.FreeTiles[tileIndex];
                 enemy.GlobalPosition = (tilePos * 16f) + (Vector2.One * 8f);
@@ -141,6 +156,7 @@ namespace Game
 
         private void OnEndTimerTimeout()
         {
+            currentLevel.QueueFree();
             EmitSignal(nameof(RoomComplete));
         }
 
