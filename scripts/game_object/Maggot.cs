@@ -13,6 +13,7 @@ namespace Game.GameObject
         private const float KNOCKBACK_FORCE = 250f;
         private const float KNOCKBACK_COEFFICIENT = 3f;
         private const float DEATH_COEFFICIENT = 3f;
+        private const float ATTACK_COEFFICIENT = 5f;
 
         [Node]
         private Timer attackChargeTimer;
@@ -172,7 +173,8 @@ namespace Game.GameObject
 
         private void StateAttackCharge()
         {
-            velocityComponent.AccelerateToVelocity(Vector2.Zero);
+            PlayShakeAnimation();
+            velocityComponent.AccelerateToVelocity(Vector2.Zero, ATTACK_COEFFICIENT);
             if (attackChargeTimer.IsStopped())
             {
                 stateMachine.ChangeState(StateAttack);

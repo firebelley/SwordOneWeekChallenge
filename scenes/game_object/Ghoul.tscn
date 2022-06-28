@@ -117,6 +117,7 @@ max_speed = 200.0
 [node name="BlackboardComponent" parent="." instance=ExtResource( 5 )]
 
 [node name="VelocityComponent" parent="." instance=ExtResource( 11 )]
+speed = 75.0
 
 [node name="HealthBarComponent" parent="." instance=ExtResource( 10 )]
 margin_top = -17.0
