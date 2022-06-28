@@ -30,6 +30,9 @@ namespace Game
             {
                 if (child is RoomManager roomManager)
                 {
+                    roomManager.Connect(nameof(RoomManager.RoomComplete), this, nameof(OnRoomComplete));
+                    roomManager.Connect(nameof(RoomManager.RoomFailed), this, nameof(OnRoomFailed));
+                    roomManager.Connect(nameof(RoomManager.SwordHealthChanged), this, nameof(OnSwordHealthChanged));
                     roomManagers.Add(roomManager);
                 }
             }
@@ -68,9 +71,6 @@ namespace Game
         {
             ClearNodes();
             var roomManager = roomManagers[roomIndex];
-            roomManager.Connect(nameof(RoomManager.RoomComplete), this, nameof(OnRoomComplete));
-            roomManager.Connect(nameof(RoomManager.RoomFailed), this, nameof(OnRoomFailed));
-            roomManager.Connect(nameof(RoomManager.SwordHealthChanged), this, nameof(OnSwordHealthChanged));
             roomManager.StartRoom(runConfig, new());
         }
 

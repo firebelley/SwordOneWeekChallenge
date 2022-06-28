@@ -1,4 +1,4 @@
-[gd_scene load_steps=57 format=2]
+[gd_scene load_steps=59 format=2]
 
 [ext_resource path="res://assets/art/sword.png" type="Texture" id=1]
 [ext_resource path="res://scripts/game_object/Sword.cs" type="Script" id=2]
@@ -50,6 +50,61 @@
 
 [sub_resource type="PhysicsMaterial" id=2]
 friction = 0.1
+
+[sub_resource type="Animation" id=11]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Visuals:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ true ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("HurtboxComponent/HurtboxShape:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ false ]
+}
+
+[sub_resource type="Animation" id=10]
+resource_name = "iframes"
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Visuals:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("HurtboxComponent/HurtboxShape:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
 
 [sub_resource type="Curve" id=7]
 max_value = 1.25
@@ -108,6 +163,10 @@ can_sleep = false
 angular_damp = 10.0
 script = ExtResource( 2 )
 
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 11 )
+anims/iframes = SubResource( 10 )
+
 [node name="ResourcePreloader" type="ResourcePreloader" parent="."]
 resources = [ PoolStringArray( "SwordHit", "SwordHitbox" ), [ ExtResource( 25 ), ExtResource( 23 ) ] ]
 
@@ -147,12 +206,14 @@ texture = ExtResource( 46 )
 visible = false
 position = Vector2( 24, 0 )
 
-[node name="Sprite" type="Sprite" parent="."]
+[node name="Visuals" type="Node2D" parent="."]
+
+[node name="Sprite" type="Sprite" parent="Visuals"]
 texture = ExtResource( 1 )
 centered = false
 offset = Vector2( -5, -3 )
 
-[node name="AnimatedSpriteAttack1" type="AnimatedSprite" parent="."]
+[node name="AnimatedSpriteAttack1" type="AnimatedSprite" parent="Visuals"]
 visible = false
 frames = SubResource( 3 )
 animation = "attack"
@@ -161,7 +222,7 @@ playing = true
 centered = false
 offset = Vector2( -13, -46 )
 
-[node name="AnimatedSpriteAttack2" type="AnimatedSprite" parent="."]
+[node name="AnimatedSpriteAttack2" type="AnimatedSprite" parent="Visuals"]
 visible = false
 frames = SubResource( 5 )
 animation = "attack"
@@ -171,7 +232,7 @@ centered = false
 offset = Vector2( -13, -44 )
 flip_v = true
 
-[node name="AnimatedSpriteAttack3" type="AnimatedSprite" parent="."]
+[node name="AnimatedSpriteAttack3" type="AnimatedSprite" parent="Visuals"]
 visible = false
 frames = SubResource( 6 )
 animation = "attack"

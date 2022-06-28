@@ -41,6 +41,8 @@ namespace Game
         [Node]
         private ScreenBanner completeScreenBanner;
         [Node]
+        private ScreenBanner deadScreenBanner;
+        [Node]
         private ResourcePreloader resourcePreloader;
 
         private BaseLevel currentLevel;
@@ -145,8 +147,8 @@ namespace Game
 
         private void OnSwordDied()
         {
-            // TODO: do some stuff here like delay
-            EmitSignal(nameof(RoomFailed));
+            deadScreenBanner.Play();
+            GetTree().CreateTimer(3.5f).Connect("timeout", this, nameof(OnDeathTimeout));
         }
 
         private void OnHealthChanged(int newHealth)
@@ -163,6 +165,12 @@ namespace Game
         private void OnWaveIntervalTimerTimeout()
         {
             StartWave();
+        }
+
+        private void OnDeathTimeout()
+        {
+            currentLevel.QueueFree();
+            EmitSignal(nameof(RoomFailed));
         }
     }
 }

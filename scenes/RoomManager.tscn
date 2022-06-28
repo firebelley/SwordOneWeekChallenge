@@ -28,3 +28,8 @@ text = "GHOULS INCOMING"
 
 [node name="CompleteScreenBanner" parent="." instance=ExtResource( 5 )]
 text = "ENEMIES DESTROYED"
+
+[node name="DeadScreenBanner" parent="." instance=ExtResource( 5 )]
+text = "YOU DIED"
+backgroundColor = Color( 0.92549, 0.152941, 0.247059, 0.588235 )
+useRedFont = true

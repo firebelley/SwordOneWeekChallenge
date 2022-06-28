@@ -1,3 +1,4 @@
+using Game.Component;
 using Game.Effect;
 using Godot;
 using GodotUtilities;
@@ -14,6 +15,8 @@ namespace Game.GameObject
         private ResourcePreloader resourcePreloader;
         [Node]
         private AnimationPlayer animationPlayer;
+        [Node]
+        private HitboxComponent hitboxComponent;
 
         private Vector2 velocity;
 
@@ -28,6 +31,7 @@ namespace Game.GameObject
         public override void _Ready()
         {
             effectSpawnTimer.Connect("timeout", this, nameof(OnEffectSpawnTimerTimeout));
+            hitboxComponent.Connect(nameof(HitboxComponent.HitHurtbox), this, nameof(OnHurtboxHit));
             SetEffectSpawnTimer();
         }
 
@@ -58,6 +62,11 @@ namespace Game.GameObject
             GetParent().AddChild(effect);
             effect.GlobalPosition = GlobalPosition;
             SetEffectSpawnTimer();
+        }
+
+        private void OnHurtboxHit(object _)
+        {
+            animationPlayer.Play("die");
         }
     }
 }

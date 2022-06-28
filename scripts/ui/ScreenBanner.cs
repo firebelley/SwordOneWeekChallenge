@@ -9,11 +9,17 @@ namespace Game.UI
         private MarginContainer marginContainer;
         [Node("%Label")]
         private Label label;
+        [Node("%RedLabel")]
+        private Label redLabel;
         [Node("%ColorRect")]
         private ColorRect colorRect;
 
         [Export]
         private string text;
+        [Export]
+        private Color backgroundColor;
+        [Export]
+        private bool useRedFont;
 
         public override void _Notification(int what)
         {
@@ -26,7 +32,13 @@ namespace Game.UI
         public override void _Ready()
         {
             label.Text = text ?? string.Empty;
+            redLabel.Text = text ?? string.Empty;
+
+            label.Visible = !useRedFont;
+            redLabel.Visible = useRedFont;
+
             marginContainer.Visible = false;
+            colorRect.Color = backgroundColor != default ? backgroundColor : colorRect.Color;
         }
 
         public void Play()
@@ -44,7 +56,14 @@ namespace Game.UI
             textTween.TweenProperty(label, "rect_position", new Vector2(15, 0), 2.7f).SetTrans(Tween.TransitionType.Linear).SetEase(Tween.EaseType.InOut);
             textTween.TweenProperty(label, "rect_position", new Vector2(label.RectSize.x, 0), .15f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
 
+            var redTextTween = redLabel.CreateTween();
+            redLabel.RectPosition = new Vector2(-redLabel.RectSize.x, 0);
+            redTextTween.TweenProperty(redLabel, "rect_position", new Vector2(0, 0), .15f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
+            redTextTween.TweenProperty(redLabel, "rect_position", new Vector2(15, 0), 2.7f).SetTrans(Tween.TransitionType.Linear).SetEase(Tween.EaseType.InOut);
+            redTextTween.TweenProperty(redLabel, "rect_position", new Vector2(redLabel.RectSize.x, 0), .15f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
+
             textTween.Connect("finished", this, nameof(OnTweenFinished));
+            redTextTween.Connect("finished", this, nameof(OnTweenFinished));
         }
 
         public override void _Process(float delta)

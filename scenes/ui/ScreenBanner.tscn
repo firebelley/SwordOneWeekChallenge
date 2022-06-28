@@ -1,5 +1,6 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
+[ext_resource path="res://resources/font64_red.tres" type="DynamicFont" id=1]
 [ext_resource path="res://resources/font64.tres" type="DynamicFont" id=2]
 [ext_resource path="res://scripts/ui/ScreenBanner.cs" type="Script" id=3]
 
@@ -43,6 +44,16 @@ unique_name_in_owner = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 custom_fonts/font = ExtResource( 2 )
+text = "GHOULS INCOMING"
+align = 1
+valign = 1
+
+[node name="RedLabel" type="Label" parent="MarginContainer/LabelControl"]
+unique_name_in_owner = true
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_fonts/font = ExtResource( 1 )
 text = "GHOULS INCOMING"
 align = 1
 valign = 1

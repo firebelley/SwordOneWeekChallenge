@@ -19,8 +19,6 @@ namespace Game.GameObject
         public delegate void Died();
 
         [Node]
-        private Timer launchTimer;
-        [Node]
         private Timer dashTimer;
         [Node]
         private Timer attackIntervalTimer;
@@ -28,13 +26,13 @@ namespace Game.GameObject
         private Timer attackStateTimer;
         [Node]
         private Timer attackResetTimer;
-        [Node]
+        [Node("Visuals/Sprite")]
         private Sprite sprite;
-        [Node]
+        [Node("Visuals/AnimatedSpriteAttack1")]
         private AnimatedSprite animatedSpriteAttack1;
-        [Node]
+        [Node("Visuals/AnimatedSpriteAttack2")]
         private AnimatedSprite animatedSpriteAttack2;
-        [Node]
+        [Node("Visuals/AnimatedSpriteAttack3")]
         private AnimatedSprite animatedSpriteAttack3;
         [Node]
         private ResourcePreloader resourcePreloader;
@@ -48,10 +46,11 @@ namespace Game.GameObject
         private HealthComponent healthComponent;
         [Node("%HurtboxShape")]
         private CollisionShape2D hurtboxShape;
+        [Node]
+        private AnimationPlayer animationPlayer;
 
         private Vector2 previousPosition;
 
-        private const float LAUNCH_FORCE = 300f;
         private const int TORQUE_COEFFICIENT = 600_000;
         private const float DASH_FORCE = 1500f;
         private const float ATTACK_FORCE = 1000f;
@@ -128,6 +127,7 @@ namespace Game.GameObject
 
         private void StateNormal()
         {
+            CheckInsideTerrain();
             ApplyTorqueTowardMouse();
             GravityScale = LinearVelocity.y < 0 ? 1.5f : 1f;
 
@@ -166,6 +166,7 @@ namespace Game.GameObject
 
         private void StateDash()
         {
+            hurtboxShape.Disabled = true;
             if (CheckInsideTerrain())
             {
                 stateMachine.ChangeState(StateNormal);
@@ -185,6 +186,7 @@ namespace Game.GameObject
             GravityScale = 1;
             LinearDamp = 0;
             dashParticles.Emitting = false;
+            hurtboxShape.Disabled = false;
             EmitSignal(nameof(DashEnded));
         }
 
@@ -273,11 +275,6 @@ namespace Game.GameObject
             ApplyTorqueTowardMouse();
             AppliedForce = Vector2.Right.Rotated(Rotation) * 3000f;
 
-            // ApplyCentralImpulse(Vector2.Right.Rotated(Rotation) * 100f);
-
-            // LinearVelocity = LinearVelocity.LimitLength(800f);
-            // LinearVelocity = LinearVelocity.LimitLength(250f);
-
             if (!Input.IsActionPressed("fly"))
             {
                 stateMachine.ChangeState(StateNormal);
@@ -312,6 +309,14 @@ namespace Game.GameObject
                 LinearVelocity = Vector2.Zero;
                 return true;
             }
+
+            result = GetTree().Root.World2d.DirectSpaceState.Raycast(previousPosition, GlobalPosition, null, 1 << 0, true, false);
+            if (result != null)
+            {
+                GlobalPosition = previousPosition + result.Normal;
+                LinearVelocity = Vector2.Zero;
+                return true;
+            }
             return false;
         }
 
@@ -334,6 +339,7 @@ namespace Game.GameObject
         private void OnHit(HitboxComponent hitbox)
         {
             healthComponent.Damage(1);
+            animationPlayer.Play("iframes");
             EmitSignal(nameof(DamageTaken));
         }
 
