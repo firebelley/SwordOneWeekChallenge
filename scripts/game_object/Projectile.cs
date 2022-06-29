@@ -44,6 +44,11 @@ namespace Game.GameObject
             }
         }
 
+        public void Kill()
+        {
+            animationPlayer.Play("die");
+        }
+
         public void SetDirection(Vector2 direction)
         {
             velocity = direction.Normalized() * SPEED;
@@ -66,7 +71,7 @@ namespace Game.GameObject
 
         private void OnHurtboxHit(object _)
         {
-            animationPlayer.Play("die");
+            Kill();
         }
     }
 }

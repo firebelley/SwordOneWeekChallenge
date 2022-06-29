@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Game.Component;
 using Game.Effect;
 using Game.Level;
@@ -14,6 +16,7 @@ namespace Game.GameObject
         private const float SPACING = 32f;
         private const float MAX_BULLET_WAVES = 2;
         private const float MAX_SUMMON_WAVES = 3;
+        private const float DEATH_COEFFICIENT = 3f;
 
         [Node]
         private AnimationPlayer animationPlayer;
@@ -45,6 +48,14 @@ namespace Game.GameObject
         private Position2D eyeLeftPosition;
         [Node]
         private Position2D eyeRightPosition;
+        [Node]
+        private HealthComponent healthComponent;
+        [Node]
+        private HurtboxComponent hurtboxComponent;
+        [Node]
+        private Timer deathTimer;
+        [Node]
+        private Timer deathIntervalTimer;
 
         private enum State
         {
@@ -53,10 +64,13 @@ namespace Game.GameObject
             BulletAttackCharge,
             BulletAttack,
             SummonCharge,
-            Summon
+            Summon,
+            Death
         }
 
         private StateMachine<State> stateMachine = new();
+        private List<Enemy> activeEnemies = new();
+        private List<Projectile> activeProjectiles = new();
 
         private int currentBulletWaves;
         private int currentSummonWaves;
@@ -87,11 +101,17 @@ namespace Game.GameObject
             stateMachine.AddEnterState(State.Summon, EnterStateSummon);
             stateMachine.AddState(State.Summon, StateSummon);
             stateMachine.AddLeaveState(State.Summon, LeaveStateSummon);
+            stateMachine.AddEnterState(State.Death, EnterStateDeath);
+            stateMachine.AddState(State.Death, StateDeath);
 
             stateMachine.SetInitialState(State.Normal);
             dashIntervalTimer.Start();
             bulletIntervalTimer.Start();
             summonIntervalTimer.Start();
+
+            pathfindComponent.Connect(nameof(PathfindComponent.VelocityUpdated), this, nameof(OnVelocityUpdated));
+            healthComponent.Connect(nameof(HealthComponent.Died), this, nameof(OnDied));
+            hurtboxComponent.Connect(nameof(HurtboxComponent.Hit), this, nameof(OnHit));
         }
 
         public override void _PhysicsProcess(float delta)
@@ -172,6 +192,7 @@ namespace Game.GameObject
         private void EnterStateBulletAttack()
         {
             currentBulletWaves = 0;
+            activeProjectiles = activeProjectiles.Where(IsInstanceValid).ToList();
         }
 
         private void StateBulletAttack()
@@ -188,6 +209,7 @@ namespace Game.GameObject
                         GetParent().AddChild(projectile);
                         projectile.GlobalPosition = eyeLeftPosition.GlobalPosition;
                         projectile.SetDirection(direction.Rotated(Mathf.Deg2Rad(-30f + (30f * i))));
+                        activeProjectiles.Add(projectile);
                     }
                 }
                 else
@@ -198,6 +220,7 @@ namespace Game.GameObject
                         GetParent().AddChild(projectile);
                         projectile.GlobalPosition = eyeRightPosition.GlobalPosition;
                         projectile.SetDirection(Vector2.Right.Rotated(Mathf.Deg2Rad(-360f + (currentBulletWaves * 20) + (40f * i))));
+                        activeProjectiles.Add(projectile);
                     }
                 }
                 bulletAttackTimer.Start();
@@ -244,6 +267,7 @@ namespace Game.GameObject
         {
             currentSummonWaves = 0;
             summonAttackTimer.Start();
+            activeEnemies = activeEnemies.Where(IsInstanceValid).ToList();
         }
 
         private void StateSummon()
@@ -265,6 +289,7 @@ namespace Game.GameObject
                 var freeTiles = this.GetAncestor<BaseLevel>()?.FreeTiles ?? new() { Vector2.Zero };
                 var position = freeTiles[MathUtil.RNG.RandiRange(0, freeTiles.Count - 1)];
                 enemy.GlobalPosition = (position * 16f) + (Vector2.One * 8f);
+                activeEnemies.Add(enemy);
 
                 currentSummonWaves++;
                 if (currentSummonWaves == MAX_SUMMON_WAVES)
@@ -282,6 +307,45 @@ namespace Game.GameObject
         private void LeaveStateSummon()
         {
             summonIntervalTimer.Start();
+        }
+
+        private void EnterStateDeath()
+        {
+            deathTimer.Start();
+            deathIntervalTimer.Start();
+            activeEnemies = activeEnemies.Where(IsInstanceValid).ToList();
+            foreach (var enemy in activeEnemies)
+            {
+                enemy.GetFirstNodeOfType<HealthComponent>()?.Damage(1000);
+            }
+
+            activeProjectiles = activeProjectiles.Where(IsInstanceValid).ToList();
+            foreach (var projectile in activeProjectiles)
+            {
+                projectile.Kill();
+            }
+        }
+
+        private void StateDeath()
+        {
+            PlayShakeAnimation();
+            PlayBlinkAnimation();
+            velocityComponent.AccelerateToVelocity(Vector2.Zero, DEATH_COEFFICIENT);
+            if (deathTimer.IsStopped())
+            {
+                var effect = resourcePreloader.InstanceSceneOrNull<Node2D>("EnemyDeathExplosion");
+                GetParent().AddChild(effect);
+                effect.GlobalPosition = GlobalPosition;
+                EmitSignal(nameof(Died));
+                QueueFree();
+            }
+            else if (deathIntervalTimer.IsStopped())
+            {
+                var effect = resourcePreloader.InstanceSceneOrNull<Node2D>("EnemyDeath");
+                AddChild(effect);
+                effect.Position = Vector2.Right.Rotated(MathUtil.RNG.RandfRange(0f, Mathf.Tau)) * MathUtil.RNG.RandfRange(0, 20f);
+                deathIntervalTimer.Start();
+            }
         }
 
 
@@ -303,6 +367,24 @@ namespace Game.GameObject
                 blinkAnimationPlayer.PlaybackSpeed = 1f / .15f;
                 blinkAnimationPlayer.Play("blink");
             }
+        }
+
+        private void OnVelocityUpdated(Vector2 velocity)
+        {
+            if (stateMachine.GetCurrentState() == State.Normal)
+            {
+                velocityComponent.SetVelocity(velocity);
+            }
+        }
+
+        private void OnDied()
+        {
+            stateMachine.ChangeState(StateDeath);
+        }
+
+        private void OnHit(HitboxComponent hitboxComponent)
+        {
+            healthComponent.Damage(1);
         }
 
         private static class Constants

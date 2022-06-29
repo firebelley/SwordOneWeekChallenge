@@ -116,7 +116,7 @@ speed = 250.0
 [node name="BlackboardComponent" parent="." instance=ExtResource( 5 )]
 
 [node name="HealthComponent" parent="." instance=ExtResource( 10 )]
-maxHealth = 25
+maxHealth = 1
 
 [node name="PathfindComponent" parent="." instance=ExtResource( 11 )]
 
@@ -126,6 +126,12 @@ one_shot = true
 
 [node name="DeathTimer" type="Timer" parent="."]
 process_mode = 0
+wait_time = 2.5
+one_shot = true
+
+[node name="DeathIntervalTimer" type="Timer" parent="."]
+process_mode = 0
+wait_time = 0.25
 one_shot = true
 
 [node name="DashIntervalTimer" parent="." instance=ExtResource( 17 )]
