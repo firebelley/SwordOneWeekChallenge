@@ -116,7 +116,7 @@ speed = 250.0
 [node name="BlackboardComponent" parent="." instance=ExtResource( 5 )]
 
 [node name="HealthComponent" parent="." instance=ExtResource( 10 )]
-maxHealth = 1
+maxHealth = 40
 
 [node name="PathfindComponent" parent="." instance=ExtResource( 11 )]
 
@@ -168,10 +168,26 @@ wait_time = 0.4
 one_shot = true
 
 [node name="HealthBarComponent" parent="." instance=ExtResource( 4 )]
-margin_top = -27.0
+margin_left = -29.0
+margin_top = -28.0
+margin_right = 30.0
 margin_bottom = -23.0
+rect_min_size = Vector2( 59, 5 )
 custom_styles/panel = SubResource( 1 )
 healthComponentPath = NodePath("../HealthComponent")
+
+[node name="ColorRect" parent="HealthBarComponent" index="0"]
+margin_right = 58.0
+margin_bottom = 4.0
+
+[node name="HBoxContainer" parent="HealthBarComponent" index="1"]
+margin_right = 58.0
+margin_bottom = 4.0
+custom_constants/separation = 0
+
+[node name="ColorRect" parent="HealthBarComponent/HBoxContainer" index="0"]
+margin_right = 57.0
+margin_bottom = 3.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 7 )
@@ -191,3 +207,5 @@ position = Vector2( -6, -2 )
 
 [node name="EyeRightPosition" type="Position2D" parent="."]
 position = Vector2( 6, -2 )
+
+[editable path="HealthBarComponent"]
