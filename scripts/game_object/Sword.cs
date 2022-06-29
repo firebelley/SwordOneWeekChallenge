@@ -366,7 +366,7 @@ namespace Game.GameObject
 
         private void OnHit(HitboxComponent hitbox)
         {
-            if (hitThisFrame)
+            if (hitThisFrame || stateMachine.GetCurrentState() == State.Dead)
             {
                 return;
             }

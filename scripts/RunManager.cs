@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Autoload;
 using Game.Data;
 using Game.UI;
 using Godot;
@@ -72,8 +73,9 @@ namespace Game
         //     perkChoice.Connect(nameof(PerkChoice.PerkSelected), this, nameof(OnPerkSelected));
         // }
 
-        private void OnRoomSelected(int roomIndex)
+        private async void OnRoomSelected(int roomIndex)
         {
+            await ScreenTransitionManager.DoTransition();
             ClearNodes();
             var roomManager = roomManagers[roomIndex];
             roomManager.StartRoom(runConfig, new());

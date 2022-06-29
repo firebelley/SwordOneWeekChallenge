@@ -1,3 +1,4 @@
+using Game.Autoload;
 using Game.Component;
 using Game.Data;
 using Game.GameObject;
@@ -176,8 +177,9 @@ namespace Game
             EmitSignal(nameof(SwordHealthChanged), newHealth);
         }
 
-        private void OnEndTimerTimeout()
+        private async void OnEndTimerTimeout()
         {
+            await ScreenTransitionManager.DoTransition();
             currentLevel.QueueFree();
             EmitSignal(nameof(RoomComplete));
         }
@@ -187,8 +189,9 @@ namespace Game
             StartWave();
         }
 
-        private void OnDeathTimeout()
+        private async void OnDeathTimeout()
         {
+            await ScreenTransitionManager.DoTransition();
             currentLevel.QueueFree();
             EmitSignal(nameof(RoomFailed));
         }

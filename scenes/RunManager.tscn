@@ -31,6 +31,9 @@ ghoulsIncrease = 1
 numMaggots = 1
 
 [node name="RoomManager4" parent="." instance=ExtResource( 3 )]
+level = ExtResource( 8 )
+maxWaves = 1
+numSkulls = 1
 
 [node name="RoomManager5" parent="." instance=ExtResource( 3 )]
 level = ExtResource( 8 )
