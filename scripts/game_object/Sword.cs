@@ -51,7 +51,7 @@ namespace Game.GameObject
 
         private Vector2 previousPosition;
 
-        private const int TORQUE_COEFFICIENT = 600_000;
+        private const int TORQUE_COEFFICIENT = 800_000;
         private const float DASH_FORCE = 1500f;
         private const float ATTACK_FORCE = 1000f;
         private const float DASH_LINEAR_DAMP = 12f;
@@ -74,12 +74,14 @@ namespace Game.GameObject
             Normal,
             Dash,
             Attack,
-            Fly
+            Fly,
+            Dead
         }
         private StateMachine<State> stateMachine = new();
 
         private int attackChain;
         private float attackTime;
+        private bool hitThisFrame;
 
         public override void _UnhandledInput(InputEvent evt)
         {
@@ -103,6 +105,8 @@ namespace Game.GameObject
             stateMachine.AddEnterState(State.Fly, EnterStateFly);
             stateMachine.AddState(State.Fly, StateFly);
             stateMachine.AddLeaveState(State.Fly, LeaveStateFly);
+            stateMachine.AddEnterState(State.Dead, EnterStateDead);
+            stateMachine.AddState(State.Dead, StateDead);
             stateMachine.SetInitialState(StateNormal);
 
             animatedSpriteAttack1.Visible = false;
@@ -123,6 +127,7 @@ namespace Game.GameObject
             animatedSpriteAttack2.FlipV = !sprite.FlipV;
             animatedSpriteAttack3.FlipV = sprite.FlipV;
             previousPosition = GlobalPosition;
+            hitThisFrame = false;
         }
 
         private void StateNormal()
@@ -266,14 +271,14 @@ namespace Game.GameObject
 
         private void EnterStateFly()
         {
-            LinearDamp = 11f;
+            LinearDamp = 12f;
         }
 
         private void StateFly()
         {
             CheckInsideTerrain();
             ApplyTorqueTowardMouse();
-            AppliedForce = Vector2.Right.Rotated(Rotation) * 2900f;
+            AppliedForce = Vector2.Right.Rotated(Rotation) * 3100f;
 
             if (!Input.IsActionPressed("fly"))
             {
@@ -289,6 +294,19 @@ namespace Game.GameObject
         {
             LinearDamp = 0f;
             AppliedForce = Vector2.Zero;
+            AppliedTorque = 0f;
+        }
+
+        private void EnterStateDead()
+        {
+            AngularDamp = 5f;
+            LinearDamp = 0f;
+            ApplyTorqueImpulse(MathUtil.RNG.RandfRange(-2000f, 2000f));
+        }
+
+        private void StateDead()
+        {
+            CheckInsideTerrain();
         }
 
         private void ApplyTorqueTowardMouse()
@@ -322,6 +340,11 @@ namespace Game.GameObject
 
         private void TryDash()
         {
+            if (stateMachine.GetCurrentState() == State.Dead)
+            {
+                return;
+            }
+
             if (dashTimer.IsStopped())
             {
                 stateMachine.ChangeState(StateDash);
@@ -330,6 +353,11 @@ namespace Game.GameObject
 
         private void TryAttack()
         {
+            if (stateMachine.GetCurrentState() == State.Dead)
+            {
+                return;
+            }
+
             if (attackIntervalTimer.IsStopped())
             {
                 stateMachine.ChangeState(StateAttack);
@@ -338,8 +366,13 @@ namespace Game.GameObject
 
         private void OnHit(HitboxComponent hitbox)
         {
+            if (hitThisFrame)
+            {
+                return;
+            }
             healthComponent.Damage(1);
             animationPlayer.Play("iframes");
+            hitThisFrame = true;
             EmitSignal(nameof(DamageTaken));
         }
 
@@ -358,7 +391,8 @@ namespace Game.GameObject
 
         private void OnDied()
         {
-            QueueFree();
+            // QueueFree();
+            stateMachine.ChangeState(StateDead);
             EmitSignal(nameof(Died));
         }
     }

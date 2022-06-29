@@ -16,6 +16,10 @@ namespace Game.GameObject
         private const float MAX_SUMMON_WAVES = 3;
 
         [Node]
+        private AnimationPlayer animationPlayer;
+        [Node]
+        private AnimationPlayer blinkAnimationPlayer;
+        [Node]
         private ResourcePreloader resourcePreloader;
         [Node]
         private VelocityComponent velocityComponent;
@@ -99,7 +103,7 @@ namespace Game.GameObject
         private void StateNormal()
         {
             var player = GetTree().GetFirstNodeInGroup<Sword>();
-            var targetPos = player?.GlobalPosition ?? GlobalPosition;
+            var targetPos = player?.CenterMass ?? GlobalPosition;
 
             if (player != null && targetPos.DistanceSquaredTo(GlobalPosition) < DASH_RANGE * DASH_RANGE && dashIntervalTimer.IsStopped())
             {
@@ -152,6 +156,7 @@ namespace Game.GameObject
 
         private void StateBulletAttackCharge()
         {
+            PlayShakeAnimation();
             if (attackChargeTimer.IsStopped())
             {
                 stateMachine.ChangeState(StateBulletAttack);
@@ -171,11 +176,12 @@ namespace Game.GameObject
 
         private void StateBulletAttack()
         {
+            PlayShakeAnimation();
             if (bulletAttackTimer.IsStopped())
             {
                 if (!alternateBulletAttack)
                 {
-                    var direction = ((GetTree().GetFirstNodeInGroup<Sword>()?.GlobalPosition ?? Vector2.Right) - GlobalPosition).Normalized();
+                    var direction = ((GetTree().GetFirstNodeInGroup<Sword>()?.CenterMass ?? Vector2.Right) - GlobalPosition).Normalized();
                     for (int i = 0; i < 3; i++)
                     {
                         var projectile = resourcePreloader.InstanceSceneOrNull<Projectile>();
@@ -226,6 +232,7 @@ namespace Game.GameObject
 
         private void StateSummonCharge()
         {
+            PlayShakeAnimation();
             if (attackChargeTimer.IsStopped())
             {
                 stateMachine.ChangeState(StateSummon);
@@ -241,6 +248,7 @@ namespace Game.GameObject
 
         private void StateSummon()
         {
+            PlayShakeAnimation();
             if (summonAttackTimer.IsStopped())
             {
                 Enemy enemy;
@@ -274,6 +282,27 @@ namespace Game.GameObject
         private void LeaveStateSummon()
         {
             summonIntervalTimer.Start();
+        }
+
+
+        // TODO: abstract this out
+        private void PlayShakeAnimation()
+        {
+            if (animationPlayer.CurrentAnimation != "shake" || !animationPlayer.IsPlaying())
+            {
+                animationPlayer.PlaybackSpeed = 1f / .1f;
+                animationPlayer.Play("shake");
+            }
+        }
+
+        // TODO: abstract this out
+        private void PlayBlinkAnimation()
+        {
+            if (blinkAnimationPlayer.CurrentAnimation != "blink" || !blinkAnimationPlayer.IsPlaying())
+            {
+                blinkAnimationPlayer.PlaybackSpeed = 1f / .15f;
+                blinkAnimationPlayer.Play("blink");
+            }
         }
 
         private static class Constants

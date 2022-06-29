@@ -18,7 +18,7 @@ namespace Game.GameObject
         [Node]
         private Timer attackChargeTimer;
         [Node]
-        private Timer attackCooldownTimer;
+        private RandomTimerComponent attackCooldownTimer;
         [Node]
         private HurtboxComponent hurtboxComponent;
         [Node]
@@ -80,19 +80,13 @@ namespace Game.GameObject
             healthComponent.Connect(nameof(HealthComponent.Died), this, nameof(OnDied));
             hurtboxComponent.Connect(nameof(HurtboxComponent.Hit), this, nameof(OnHit));
 
-            StartAttackCooldown();
+            attackCooldownTimer.Start();
         }
 
         public override void _PhysicsProcess(float delta)
         {
             stateMachine.Update();
             velocityComponent.MoveAndSlide();
-        }
-
-        private void StartAttackCooldown()
-        {
-            attackCooldownTimer.WaitTime = MathUtil.RNG.RandfRange(2f, 4f);
-            attackCooldownTimer.Start();
         }
 
         private void StateNormal()
@@ -195,7 +189,7 @@ namespace Game.GameObject
 
         private void LeaveStateAttack()
         {
-            StartAttackCooldown();
+            attackCooldownTimer.Start();
         }
 
         private void EnterStateDeath()
