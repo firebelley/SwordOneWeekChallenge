@@ -10,7 +10,6 @@ namespace Game
 {
     public class RoomManager : Node
     {
-        private const int MAX_WAVES = 3;
 
         [Signal]
         public delegate void RoomComplete();
@@ -22,6 +21,8 @@ namespace Game
         [Export]
         private PackedScene level;
         [Export]
+        private int maxWaves = 3;
+        [Export]
         private int numGhouls;
         [Export]
         private int ghoulsIncrease;
@@ -29,6 +30,8 @@ namespace Game
         private int numMaggots;
         [Export]
         private int maggotsIncrease;
+        [Export]
+        private int numSkulls;
 
         [Node]
         private Timer waveTimer;
@@ -127,6 +130,17 @@ namespace Game
                 enemy.GlobalPosition = (tilePos * 16f) + (Vector2.One * 8f);
                 enemyCount++;
             }
+
+            for (int i = 0; i < numSkulls; i++)
+            {
+                var enemy = resourcePreloader.InstanceSceneOrNull<Skull>();
+                currentLevel.Entities.AddChild(enemy);
+                enemy.Connect(nameof(Enemy.Died), this, nameof(OnEnemyDied));
+                var tileIndex = MathUtil.RNG.RandiRange(0, currentLevel.FreeTiles.Count - 1);
+                var tilePos = currentLevel.FreeTiles[tileIndex];
+                enemy.GlobalPosition = (tilePos * 16f) + (Vector2.One * 8f);
+                enemyCount++;
+            }
         }
 
         private void OnWaveTimerTimeout()
@@ -139,7 +153,7 @@ namespace Game
             enemyCount--;
             if (enemyCount <= 0)
             {
-                if (currentWave == MAX_WAVES)
+                if (currentWave == maxWaves)
                 {
                     completeScreenBanner.Play();
                     endTimer.Start();
