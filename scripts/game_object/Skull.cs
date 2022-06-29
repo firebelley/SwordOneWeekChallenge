@@ -1,5 +1,6 @@
 using Game.Component;
 using Game.Effect;
+using Game.Level;
 using Godot;
 using GodotUtilities;
 using GodotUtilities.Logic;
@@ -12,6 +13,7 @@ namespace Game.GameObject
         private const float DASH_SPEED = 250f;
         private const float SPACING = 32f;
         private const float MAX_BULLET_WAVES = 2;
+        private const float MAX_SUMMON_WAVES = 3;
 
         [Node]
         private ResourcePreloader resourcePreloader;
@@ -20,15 +22,19 @@ namespace Game.GameObject
         [Node]
         private PathfindComponent pathfindComponent;
         [Node]
-        private Timer dashIntervalTimer;
+        private RandomTimerComponent dashIntervalTimer;
         [Node]
         private Timer dashDurationTimer;
         [Node]
-        private Timer bulletIntervalTimer;
+        private RandomTimerComponent bulletIntervalTimer;
         [Node]
-        private Timer bulletChargeTimer;
+        private Timer attackChargeTimer;
         [Node]
         private Timer bulletAttackTimer;
+        [Node]
+        private Timer summonAttackTimer;
+        [Node]
+        private RandomTimerComponent summonIntervalTimer;
         [Node]
         private BlackboardComponent blackboardComponent;
         [Node]
@@ -42,11 +48,14 @@ namespace Game.GameObject
             Dash,
             BulletAttackCharge,
             BulletAttack,
+            SummonCharge,
+            Summon
         }
 
         private StateMachine<State> stateMachine = new();
 
         private int currentBulletWaves;
+        private int currentSummonWaves;
         private bool alternateBulletAttack;
 
         public override void _Notification(int what)
@@ -69,8 +78,16 @@ namespace Game.GameObject
             stateMachine.AddEnterState(State.BulletAttack, EnterStateBulletAttack);
             stateMachine.AddState(State.BulletAttack, StateBulletAttack);
             stateMachine.AddLeaveState(State.BulletAttack, LeaveStateBulletAttack);
+            stateMachine.AddEnterState(State.SummonCharge, EnterStateSummonCharge);
+            stateMachine.AddState(State.SummonCharge, StateSummonCharge);
+            stateMachine.AddEnterState(State.Summon, EnterStateSummon);
+            stateMachine.AddState(State.Summon, StateSummon);
+            stateMachine.AddLeaveState(State.Summon, LeaveStateSummon);
 
             stateMachine.SetInitialState(State.Normal);
+            dashIntervalTimer.Start();
+            bulletIntervalTimer.Start();
+            summonIntervalTimer.Start();
         }
 
         public override void _PhysicsProcess(float delta)
@@ -78,7 +95,6 @@ namespace Game.GameObject
             stateMachine.Update();
             velocityComponent.MoveAndSlide();
         }
-
 
         private void StateNormal()
         {
@@ -88,6 +104,10 @@ namespace Game.GameObject
             if (player != null && targetPos.DistanceSquaredTo(GlobalPosition) < DASH_RANGE * DASH_RANGE && dashIntervalTimer.IsStopped())
             {
                 stateMachine.ChangeState(StateDash);
+            }
+            else if (summonIntervalTimer.IsStopped())
+            {
+                stateMachine.ChangeState(StateSummonCharge);
             }
             else if (bulletIntervalTimer.IsStopped())
             {
@@ -123,16 +143,16 @@ namespace Game.GameObject
 
         private void EnterStateBulletAttackCharge()
         {
-            bulletChargeTimer.Start();
+            attackChargeTimer.Start();
             var eyeNode = alternateBulletAttack ? eyeRightPosition : eyeLeftPosition;
             var attackCharge = resourcePreloader.InstanceSceneOrNull<AttackCharge>();
             eyeNode.AddChild(attackCharge);
-            attackCharge.SetDuration(1f / bulletChargeTimer.WaitTime);
+            attackCharge.SetDuration(1f / attackChargeTimer.WaitTime);
         }
 
         private void StateBulletAttackCharge()
         {
-            if (bulletChargeTimer.IsStopped())
+            if (attackChargeTimer.IsStopped())
             {
                 stateMachine.ChangeState(StateBulletAttack);
             }
@@ -187,6 +207,73 @@ namespace Game.GameObject
         private void LeaveStateBulletAttack()
         {
             alternateBulletAttack = !alternateBulletAttack;
+        }
+
+        private void EnterStateSummonCharge()
+        {
+            var eyes = new Node2D[] {
+                eyeLeftPosition,
+                eyeRightPosition
+            };
+            foreach (var eye in eyes)
+            {
+                var attackCharge = resourcePreloader.InstanceSceneOrNull<AttackCharge>();
+                eye.AddChild(attackCharge);
+                attackCharge.SetDuration(1f / attackChargeTimer.WaitTime);
+            }
+            attackChargeTimer.Start();
+        }
+
+        private void StateSummonCharge()
+        {
+            if (attackChargeTimer.IsStopped())
+            {
+                stateMachine.ChangeState(StateSummon);
+            }
+            velocityComponent.AccelerateToVelocity(Vector2.Zero);
+        }
+
+        private void EnterStateSummon()
+        {
+            currentSummonWaves = 0;
+            summonAttackTimer.Start();
+        }
+
+        private void StateSummon()
+        {
+            if (summonAttackTimer.IsStopped())
+            {
+                Enemy enemy;
+                if (currentSummonWaves < MAX_SUMMON_WAVES - 1)
+                {
+                    enemy = resourcePreloader.InstanceSceneOrNull<Ghoul>();
+                }
+                else
+                {
+                    enemy = resourcePreloader.InstanceSceneOrNull<Maggot>();
+                }
+                GetParent().AddChild(enemy);
+
+                var freeTiles = this.GetAncestor<BaseLevel>()?.FreeTiles ?? new() { Vector2.Zero };
+                var position = freeTiles[MathUtil.RNG.RandiRange(0, freeTiles.Count - 1)];
+                enemy.GlobalPosition = (position * 16f) + (Vector2.One * 8f);
+
+                currentSummonWaves++;
+                if (currentSummonWaves == MAX_SUMMON_WAVES)
+                {
+                    stateMachine.ChangeState(StateNormal);
+                }
+                else
+                {
+                    summonAttackTimer.Start();
+                }
+            }
+            velocityComponent.AccelerateToVelocity(Vector2.Zero);
+        }
+
+        private void LeaveStateSummon()
+        {
+            summonIntervalTimer.Start();
         }
 
         private static class Constants

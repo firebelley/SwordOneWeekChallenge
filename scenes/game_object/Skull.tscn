@@ -1,9 +1,11 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=25 format=2]
 
 [ext_resource path="res://scenes/effect/EnemyDeathExplosion.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/game_object/Ghoul.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scenes/effect/AttackCharge.tscn" type="PackedScene" id=3]
 [ext_resource path="res://scenes/component/HealthBarComponent.tscn" type="PackedScene" id=4]
 [ext_resource path="res://scenes/component/BlackboardComponent.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/game_object/Maggot.tscn" type="PackedScene" id=6]
 [ext_resource path="res://scenes/component/HurtboxComponent.tscn" type="PackedScene" id=7]
 [ext_resource path="res://scenes/component/PlayerLineOfSightComponent.tscn" type="PackedScene" id=8]
 [ext_resource path="res://scenes/component/VelocityComponent.tscn" type="PackedScene" id=9]
@@ -14,6 +16,7 @@
 [ext_resource path="res://scenes/game_object/Projectile.tscn" type="PackedScene" id=14]
 [ext_resource path="res://assets/art/skull.png" type="Texture" id=15]
 [ext_resource path="res://assets/art/ui/bar.png" type="Texture" id=16]
+[ext_resource path="res://scenes/component/RandomTimerComponent.tscn" type="PackedScene" id=17]
 
 [sub_resource type="Animation" id=6]
 length = 0.001
@@ -104,7 +107,7 @@ anims/RESET = SubResource( 3 )
 anims/shake = SubResource( 4 )
 
 [node name="ResourcePreloader" type="ResourcePreloader" parent="."]
-resources = [ PoolStringArray( "AttackCharge", "EnemyDeath", "EnemyDeathExplosion", "Projectile" ), [ ExtResource( 3 ), ExtResource( 12 ), ExtResource( 1 ), ExtResource( 14 ) ] ]
+resources = [ PoolStringArray( "AttackCharge", "EnemyDeath", "EnemyDeathExplosion", "Ghoul", "Maggot", "Projectile" ), [ ExtResource( 3 ), ExtResource( 12 ), ExtResource( 1 ), ExtResource( 2 ), ExtResource( 6 ), ExtResource( 14 ) ] ]
 
 [node name="VelocityComponent" parent="." instance=ExtResource( 9 )]
 accelerationCoefficient = 2.0
@@ -117,32 +120,45 @@ maxHealth = 25
 
 [node name="PathfindComponent" parent="." instance=ExtResource( 11 )]
 
+[node name="AttackChargeTimer" type="Timer" parent="."]
+process_mode = 0
+one_shot = true
+
 [node name="DeathTimer" type="Timer" parent="."]
 process_mode = 0
 one_shot = true
 
-[node name="DashIntervalTimer" type="Timer" parent="."]
+[node name="DashIntervalTimer" parent="." instance=ExtResource( 17 )]
 process_mode = 0
-wait_time = 3.0
 one_shot = true
+minTime = 3.0
+maxTime = 4.0
 
 [node name="DashDurationTimer" type="Timer" parent="."]
 process_mode = 0
 wait_time = 1.5
 one_shot = true
 
-[node name="BulletIntervalTimer" type="Timer" parent="."]
-process_mode = 0
-wait_time = 2.0
-one_shot = true
-
-[node name="BulletChargeTimer" type="Timer" parent="."]
+[node name="BulletIntervalTimer" parent="." instance=ExtResource( 17 )]
 process_mode = 0
 one_shot = true
+minTime = 1.5
+maxTime = 2.5
 
 [node name="BulletAttackTimer" type="Timer" parent="."]
 process_mode = 0
-wait_time = 0.5
+wait_time = 0.6
+one_shot = true
+
+[node name="SummonIntervalTimer" parent="." instance=ExtResource( 17 )]
+process_mode = 0
+one_shot = true
+minTime = 10.0
+maxTime = 15.0
+
+[node name="SummonAttackTimer" type="Timer" parent="."]
+process_mode = 0
+wait_time = 0.4
 one_shot = true
 
 [node name="HealthBarComponent" parent="." instance=ExtResource( 4 )]
