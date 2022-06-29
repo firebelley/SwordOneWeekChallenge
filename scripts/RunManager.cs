@@ -41,6 +41,15 @@ namespace Game
             ShowLevelSelector();
         }
 
+        public override void _UnhandledInput(InputEvent evt)
+        {
+            if (evt.IsActionPressed("pause"))
+            {
+                GetTree().SetInputAsHandled();
+                AddChild(GD.Load<PackedScene>("res://scenes/ui/PauseMenu.tscn").Instance());
+            }
+        }
+
         private void ClearNodes()
         {
             this.GetFirstNodeOfType<LevelSelector>()?.QueueFree();

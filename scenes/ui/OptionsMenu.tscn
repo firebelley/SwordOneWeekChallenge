@@ -6,6 +6,7 @@
 [ext_resource path="res://scripts/ui/OptionsMenu.cs" type="Script" id=4]
 
 [node name="OptionsMenu" type="CanvasLayer"]
+layer = 2
 script = ExtResource( 4 )
 
 [node name="ColorRect" type="ColorRect" parent="."]
