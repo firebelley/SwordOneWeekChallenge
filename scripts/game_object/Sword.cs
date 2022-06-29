@@ -273,7 +273,7 @@ namespace Game.GameObject
         {
             CheckInsideTerrain();
             ApplyTorqueTowardMouse();
-            AppliedForce = Vector2.Right.Rotated(Rotation) * 3000f;
+            AppliedForce = Vector2.Right.Rotated(Rotation) * 2900f;
 
             if (!Input.IsActionPressed("fly"))
             {

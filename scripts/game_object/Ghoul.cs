@@ -133,7 +133,6 @@ namespace Game.GameObject
             attackChargeTimer.Start();
             var attackCharge = resourcePreloader.InstanceSceneOrNull<AttackCharge>();
             AddChild(attackCharge);
-            attackCharge.GlobalPosition = GlobalPosition;
             attackCharge.SetDuration(1f / attackChargeTimer.WaitTime);
         }
 
@@ -155,15 +154,14 @@ namespace Game.GameObject
                 stateMachine.ChangeState(StateNormal);
                 return;
             }
-            var magma = resourcePreloader.InstanceSceneOrNull<Projectile>();
-            magma.SetDirection((playerPos.Value - GlobalPosition).Normalized());
-            GetParent().AddChild(magma);
-            magma.GlobalPosition = GlobalPosition;
+            var projectile = resourcePreloader.InstanceSceneOrNull<Projectile>();
+            projectile.SetDirection((playerPos.Value - GlobalPosition).Normalized());
+            GetParent().AddChild(projectile);
+            projectile.GlobalPosition = GlobalPosition;
         }
 
         private void StateAttack()
         {
-            // TODO: have some animation here
             stateMachine.ChangeState(StateNormal);
             velocityComponent.AccelerateToVelocity(Vector2.Zero);
         }

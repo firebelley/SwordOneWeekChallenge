@@ -1,0 +1,171 @@
+[gd_scene load_steps=22 format=2]
+
+[ext_resource path="res://scenes/effect/EnemyDeathExplosion.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/effect/AttackCharge.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/component/HealthBarComponent.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scenes/component/BlackboardComponent.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/component/HurtboxComponent.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/component/PlayerLineOfSightComponent.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scenes/component/VelocityComponent.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/component/HealthComponent.tscn" type="PackedScene" id=10]
+[ext_resource path="res://scenes/component/PathfindComponent.tscn" type="PackedScene" id=11]
+[ext_resource path="res://scenes/effect/EnemyDeath.tscn" type="PackedScene" id=12]
+[ext_resource path="res://scripts/game_object/Skull.cs" type="Script" id=13]
+[ext_resource path="res://scenes/game_object/Projectile.tscn" type="PackedScene" id=14]
+[ext_resource path="res://assets/art/skull.png" type="Texture" id=15]
+[ext_resource path="res://assets/art/ui/bar.png" type="Texture" id=16]
+
+[sub_resource type="Animation" id=6]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ true ]
+}
+
+[sub_resource type="Animation" id=5]
+resource_name = "blink"
+step = 0.25
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.25, 0.5, 0.75 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 1,
+"values": [ true, false, true, false ]
+}
+
+[sub_resource type="Animation" id=3]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "shake"
+step = 0.25
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:position")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.25, 0.5, 0.75 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 1, 0 ), Vector2( 0, 0 ), Vector2( -1, 0 ) ]
+}
+
+[sub_resource type="StyleBoxTexture" id=1]
+texture = ExtResource( 16 )
+region_rect = Rect2( 0, 0, 4, 4 )
+margin_left = 1.0
+margin_right = 1.0
+margin_top = 1.0
+margin_bottom = 1.0
+
+[sub_resource type="CircleShape2D" id=7]
+radius = 15.0
+
+[sub_resource type="CircleShape2D" id=8]
+radius = 20.0
+
+[node name="Skull" type="KinematicBody2D"]
+collision_layer = 0
+script = ExtResource( 13 )
+
+[node name="BlinkAnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 6 )
+anims/blink = SubResource( 5 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/RESET = SubResource( 3 )
+anims/shake = SubResource( 4 )
+
+[node name="ResourcePreloader" type="ResourcePreloader" parent="."]
+resources = [ PoolStringArray( "AttackCharge", "EnemyDeath", "EnemyDeathExplosion", "Projectile" ), [ ExtResource( 3 ), ExtResource( 12 ), ExtResource( 1 ), ExtResource( 14 ) ] ]
+
+[node name="VelocityComponent" parent="." instance=ExtResource( 9 )]
+accelerationCoefficient = 2.0
+speed = 250.0
+
+[node name="BlackboardComponent" parent="." instance=ExtResource( 5 )]
+
+[node name="HealthComponent" parent="." instance=ExtResource( 10 )]
+maxHealth = 25
+
+[node name="PathfindComponent" parent="." instance=ExtResource( 11 )]
+
+[node name="DeathTimer" type="Timer" parent="."]
+process_mode = 0
+one_shot = true
+
+[node name="DashIntervalTimer" type="Timer" parent="."]
+process_mode = 0
+wait_time = 3.0
+one_shot = true
+
+[node name="DashDurationTimer" type="Timer" parent="."]
+process_mode = 0
+wait_time = 1.5
+one_shot = true
+
+[node name="BulletIntervalTimer" type="Timer" parent="."]
+process_mode = 0
+wait_time = 2.0
+one_shot = true
+
+[node name="BulletChargeTimer" type="Timer" parent="."]
+process_mode = 0
+one_shot = true
+
+[node name="BulletAttackTimer" type="Timer" parent="."]
+process_mode = 0
+wait_time = 0.5
+one_shot = true
+
+[node name="HealthBarComponent" parent="." instance=ExtResource( 4 )]
+margin_top = -27.0
+margin_bottom = -23.0
+custom_styles/panel = SubResource( 1 )
+healthComponentPath = NodePath("../HealthComponent")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 7 )
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 15 )
+
+[node name="PlayerLineOfSightComponent" parent="." instance=ExtResource( 8 )]
+
+[node name="HurtboxComponent" parent="." instance=ExtResource( 7 )]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
+shape = SubResource( 8 )
+
+[node name="EyeLeftPosition" type="Position2D" parent="."]
+position = Vector2( -6, -2 )
+
+[node name="EyeRightPosition" type="Position2D" parent="."]
+position = Vector2( 6, -2 )

@@ -110,6 +110,7 @@ process_mode = 0
 one_shot = true
 
 [node name="PathfindComponent" parent="." instance=ExtResource( 12 )]
+radius = 10.0
 
 [node name="HealthComponent" parent="." instance=ExtResource( 4 )]
 
