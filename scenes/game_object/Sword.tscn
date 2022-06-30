@@ -1,4 +1,4 @@
-[gd_scene load_steps=71 format=2]
+[gd_scene load_steps=73 format=2]
 
 [ext_resource path="res://assets/art/sword.png" type="Texture" id=1]
 [ext_resource path="res://scripts/game_object/Sword.cs" type="Script" id=2]
@@ -59,6 +59,8 @@
 [ext_resource path="res://assets/sounds/sword/whoosh_swish_small_harsh_04.wav" type="AudioStream" id=57]
 [ext_resource path="res://assets/sounds/sword/whoosh_swish_high_big_05.wav" type="AudioStream" id=58]
 [ext_resource path="res://assets/sounds/sword/whoosh_swish_small_harsh_01.wav" type="AudioStream" id=59]
+[ext_resource path="res://assets/sounds/sword/cinematic_deep_boom_impact_01.wav" type="AudioStream" id=60]
+[ext_resource path="res://assets/sounds/sword/sci-fi_code_fail_06.wav" type="AudioStream" id=61]
 
 [sub_resource type="PhysicsMaterial" id=2]
 friction = 0.1
@@ -243,6 +245,14 @@ bus = "sfx"
 
 [node name="AudioStreamPlayer10" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
 stream = ExtResource( 50 )
+bus = "sfx"
+
+[node name="HitStreamPlayer1" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 61 )
+bus = "sfx"
+
+[node name="HitStreamPlayer2" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 60 )
 bus = "sfx"
 
 [node name="DashParticles" type="Particles2D" parent="."]

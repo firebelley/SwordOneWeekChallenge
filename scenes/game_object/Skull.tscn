@@ -177,7 +177,6 @@ one_shot = true
 
 [node name="DeathIntervalTimer" type="Timer" parent="."]
 process_mode = 0
-wait_time = 0.25
 one_shot = true
 
 [node name="DashIntervalTimer" parent="." instance=ExtResource( 17 )]

@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Fire Wall (loop).mp3-2a1b606097a940786ac46acb3eba5a38.mp3str"
+
+[deps]
+
+source_file="res://assets/sounds/enemy/Fire Wall (loop).mp3"
+dest_files=[ "res://.import/Fire Wall (loop).mp3-2a1b606097a940786ac46acb3eba5a38.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0

@@ -259,6 +259,10 @@ namespace Game.GameObject
 
         private void OnHit(HitboxComponent hitboxComponent)
         {
+            if (stateMachine.GetCurrentState() == State.Death)
+            {
+                return;
+            }
             if (hitboxComponent.ApplyKnockback)
             {
                 blackboardComponent.SetValue(Constants.V_KNOCKBACK_DIRECTION, Vector2.Right.Rotated(hitboxComponent.Rotation));

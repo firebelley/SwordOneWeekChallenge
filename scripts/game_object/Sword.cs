@@ -49,6 +49,10 @@ namespace Game.GameObject
         private AnimationPlayer animationPlayer;
         [Node]
         private RandomAudioStreamPlayerComponent randomAudioStreamPlayerComponent;
+        [Node]
+        private AudioStreamPlayer hitStreamPlayer1;
+        [Node]
+        private AudioStreamPlayer hitStreamPlayer2;
 
         private Vector2 previousPosition;
 
@@ -382,6 +386,8 @@ namespace Game.GameObject
             healthComponent.Damage(1);
             animationPlayer.Play("iframes");
             hitThisFrame = true;
+            hitStreamPlayer1.Play();
+            hitStreamPlayer2.Play();
             EmitSignal(nameof(DamageTaken));
         }
 

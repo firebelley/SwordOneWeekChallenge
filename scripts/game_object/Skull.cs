@@ -315,7 +315,6 @@ namespace Game.GameObject
         private void EnterStateDeath()
         {
             deathTimer.Start();
-            deathIntervalTimer.Start();
             activeEnemies = activeEnemies.Where(IsInstanceValid).ToList();
             foreach (var enemy in activeEnemies)
             {
@@ -339,6 +338,7 @@ namespace Game.GameObject
                 var effect = resourcePreloader.InstanceSceneOrNull<Node2D>("EnemyDeathExplosion");
                 GetParent().AddChild(effect);
                 effect.GlobalPosition = GlobalPosition;
+                effect.Scale = Vector2.One * 2f;
                 EmitSignal(nameof(Died));
                 QueueFree();
             }
@@ -347,6 +347,7 @@ namespace Game.GameObject
                 var effect = resourcePreloader.InstanceSceneOrNull<Node2D>("EnemyDeath");
                 AddChild(effect);
                 effect.Position = Vector2.Right.Rotated(MathUtil.RNG.RandfRange(0f, Mathf.Tau)) * MathUtil.RNG.RandfRange(0, 20f);
+                effect.Scale = Vector2.One * 2f;
                 deathIntervalTimer.Start();
             }
         }
@@ -387,6 +388,10 @@ namespace Game.GameObject
 
         private void OnHit(HitboxComponent hitboxComponent)
         {
+            if (stateMachine.GetCurrentState() == State.Death)
+            {
+                return;
+            }
             healthComponent.Damage(1);
         }
 
