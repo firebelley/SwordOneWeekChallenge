@@ -1,0 +1,23 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/bullet_impact_metal_heavy_07.wav-24cda92f1dd310fb7d1f6b02cf1fe489.sample"
+
+[deps]
+
+source_file="res://assets/sounds/sword/bullet_impact_metal_heavy_07.wav"
+dest_files=[ "res://.import/bullet_impact_metal_heavy_07.wav-24cda92f1dd310fb7d1f6b02cf1fe489.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

@@ -1,0 +1,23 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/whoosh_swish_small_harsh_04.wav-c1ec04b401fe31ef8da5f599ced6837e.sample"
+
+[deps]
+
+source_file="res://assets/sounds/sword/whoosh_swish_small_harsh_04.wav"
+dest_files=[ "res://.import/whoosh_swish_small_harsh_04.wav-c1ec04b401fe31ef8da5f599ced6837e.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

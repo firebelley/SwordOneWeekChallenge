@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=2]
+[gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://assets/art/maggot.png" type="Texture" id=1]
 [ext_resource path="res://scenes/component/PathfindComponent.tscn" type="PackedScene" id=2]
@@ -14,6 +14,7 @@
 [ext_resource path="res://scenes/effect/LaserAttack.tscn" type="PackedScene" id=12]
 [ext_resource path="res://scenes/component/RandomTimerComponent.tscn" type="PackedScene" id=13]
 [ext_resource path="res://scenes/component/EnemySpawnComponent.tscn" type="PackedScene" id=14]
+[ext_resource path="res://scenes/component/EnemyHitSoundComponent.tscn" type="PackedScene" id=15]
 [ext_resource path="res://scenes/component/HurtboxComponent.tscn" type="PackedScene" id=18]
 [ext_resource path="res://scenes/component/HealthComponent.tscn" type="PackedScene" id=19]
 [ext_resource path="res://assets/art/ui/bar.png" type="Texture" id=20]
@@ -170,6 +171,9 @@ maxHealth = 5
 
 [node name="VelocityComponent" parent="." instance=ExtResource( 6 )]
 speed = 200.0
+
+[node name="EnemyHitSoundComponent" parent="." instance=ExtResource( 15 )]
+hurtboxComponentPath = NodePath("../HurtboxComponent")
 
 [node name="HealthBarComponent" parent="." instance=ExtResource( 5 )]
 margin_top = -21.0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=2]
+[gd_scene load_steps=25 format=2]
 
 [ext_resource path="res://assets/art/ghoul.png" type="Texture" id=1]
 [ext_resource path="res://scripts/game_object/Ghoul.cs" type="Script" id=2]
@@ -15,6 +15,7 @@
 [ext_resource path="res://scenes/component/PlayerLineOfSightComponent.tscn" type="PackedScene" id=13]
 [ext_resource path="res://scenes/component/RandomTimerComponent.tscn" type="PackedScene" id=14]
 [ext_resource path="res://scenes/component/EnemySpawnComponent.tscn" type="PackedScene" id=15]
+[ext_resource path="res://scenes/component/EnemyHitSoundComponent.tscn" type="PackedScene" id=16]
 
 [sub_resource type="Animation" id=9]
 length = 0.001
@@ -156,6 +157,9 @@ radius = 10.0
 
 [node name="VelocityComponent" parent="." instance=ExtResource( 11 )]
 speed = 75.0
+
+[node name="EnemyHitSoundComponent" parent="." instance=ExtResource( 16 )]
+hurtboxComponentPath = NodePath("../HurtboxComponent")
 
 [node name="HealthBarComponent" parent="." instance=ExtResource( 10 )]
 margin_top = -17.0

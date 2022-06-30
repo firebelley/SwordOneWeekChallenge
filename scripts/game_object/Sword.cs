@@ -47,6 +47,8 @@ namespace Game.GameObject
         private CollisionShape2D hurtboxShape;
         [Node]
         private AnimationPlayer animationPlayer;
+        [Node]
+        private RandomAudioStreamPlayerComponent randomAudioStreamPlayerComponent;
 
         private Vector2 previousPosition;
 
@@ -169,6 +171,8 @@ namespace Game.GameObject
             hitbox.Rotation = direction.Angle();
             hitbox.ApplyKnockback = false;
             hitbox.Connect(nameof(HitboxComponent.HitHurtbox), this, nameof(OnHurtboxHit));
+
+            randomAudioStreamPlayerComponent.Play();
         }
 
         private void StateDash()
@@ -249,6 +253,7 @@ namespace Game.GameObject
             hitbox.Connect(nameof(HitboxComponent.HitHurtbox), this, nameof(OnHurtboxHit));
 
             attackChain++;
+            randomAudioStreamPlayerComponent.Play();
         }
 
         private void StateAttack()

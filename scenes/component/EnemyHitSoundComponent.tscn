@@ -1,0 +1,196 @@
+[gd_scene load_steps=33 format=2]
+
+[ext_resource path="res://assets/sounds/sword/gore - large metal knife muted ring - 34.wav" type="AudioStream" id=1]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_light_04.wav" type="AudioStream" id=2]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_heavy_01.wav" type="AudioStream" id=3]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_heavy_02.wav" type="AudioStream" id=4]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_heavy_03.wav" type="AudioStream" id=5]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_heavy_05.wav" type="AudioStream" id=6]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_heavy_06.wav" type="AudioStream" id=7]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_heavy_08.wav" type="AudioStream" id=8]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_light_01.wav" type="AudioStream" id=9]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_heavy_07.wav" type="AudioStream" id=10]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_heavy_04.wav" type="AudioStream" id=11]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_light_02.wav" type="AudioStream" id=12]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_light_03.wav" type="AudioStream" id=13]
+[ext_resource path="res://assets/sounds/sword/footstep_metal_low_run_06.wav" type="AudioStream" id=14]
+[ext_resource path="res://assets/sounds/sword/footstep_metal_low_run_07.wav" type="AudioStream" id=15]
+[ext_resource path="res://assets/sounds/sword/footstep_metal_low_run_01.wav" type="AudioStream" id=16]
+[ext_resource path="res://assets/sounds/sword/footstep_metal_low_run_09.wav" type="AudioStream" id=17]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_light_05.wav" type="AudioStream" id=18]
+[ext_resource path="res://assets/sounds/sword/footstep_metal_low_run_02.wav" type="AudioStream" id=19]
+[ext_resource path="res://assets/sounds/sword/footstep_metal_low_run_03.wav" type="AudioStream" id=20]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_light_06.wav" type="AudioStream" id=21]
+[ext_resource path="res://assets/sounds/sword/footstep_metal_low_run_05.wav" type="AudioStream" id=22]
+[ext_resource path="res://assets/sounds/sword/footstep_metal_low_run_10.wav" type="AudioStream" id=23]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_light_08.wav" type="AudioStream" id=24]
+[ext_resource path="res://assets/sounds/sword/bullet_impact_metal_light_07.wav" type="AudioStream" id=25]
+[ext_resource path="res://assets/sounds/sword/footstep_metal_low_run_08.wav" type="AudioStream" id=26]
+[ext_resource path="res://assets/sounds/sword/footstep_metal_low_run_04.wav" type="AudioStream" id=27]
+[ext_resource path="res://scripts/component/EnemyHitSoundComponent.cs" type="Script" id=28]
+[ext_resource path="res://scenes/component/RandomAudioStreamPlayerComponent.tscn" type="PackedScene" id=29]
+[ext_resource path="res://assets/sounds/sword/gore - large metal knife muted ring - 1.wav" type="AudioStream" id=30]
+[ext_resource path="res://assets/sounds/sword/gore - large metal knife ring - 8.wav" type="AudioStream" id=31]
+[ext_resource path="res://assets/sounds/sword/gore - large metal knife muted ring - 13.wav" type="AudioStream" id=32]
+
+[node name="EnemyHitSoundComponent" type="Node"]
+script = ExtResource( 28 )
+
+[node name="RandomAudioStreamPlayerComponent" parent="." instance=ExtResource( 29 )]
+randomPitch = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 3 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 4 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer3" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 5 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer4" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 11 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer5" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 6 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer6" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 7 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer7" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 10 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer8" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 8 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer9" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 9 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer10" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 12 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer11" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 13 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer12" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 2 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer13" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 18 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer14" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 21 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer15" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 25 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer16" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent"]
+stream = ExtResource( 24 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="RandomAudioStreamPlayerComponent2" parent="." instance=ExtResource( 29 )]
+randomPitch = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent2"]
+stream = ExtResource( 16 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent2"]
+stream = ExtResource( 19 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer3" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent2"]
+stream = ExtResource( 20 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer4" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent2"]
+stream = ExtResource( 27 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer5" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent2"]
+stream = ExtResource( 22 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer6" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent2"]
+stream = ExtResource( 14 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer7" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent2"]
+stream = ExtResource( 15 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer8" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent2"]
+stream = ExtResource( 26 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer9" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent2"]
+stream = ExtResource( 17 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer10" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent2"]
+stream = ExtResource( 23 )
+volume_db = -5.0
+bus = "sfx"
+
+[node name="RandomAudioStreamPlayerComponent3" parent="." instance=ExtResource( 29 )]
+randomPitch = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent3"]
+stream = ExtResource( 30 )
+volume_db = -10.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent3"]
+stream = ExtResource( 32 )
+volume_db = -10.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer3" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent3"]
+stream = ExtResource( 1 )
+volume_db = -10.0
+bus = "sfx"
+
+[node name="AudioStreamPlayer4" type="AudioStreamPlayer" parent="RandomAudioStreamPlayerComponent3"]
+stream = ExtResource( 31 )
+volume_db = -10.0
+bus = "sfx"
