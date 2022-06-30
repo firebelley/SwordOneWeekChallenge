@@ -18,22 +18,26 @@ resources = [ PoolStringArray( "LevelSelector", "PerkChoice", "RoomManager" ), [
 [node name="RoomManager1" parent="." instance=ExtResource( 3 )]
 level = ExtResource( 5 )
 numGhouls = 1
+ghoulsIncrease = 0.5
 
 [node name="RoomManager2" parent="." instance=ExtResource( 3 )]
 level = ExtResource( 6 )
 numGhouls = 1
-ghoulsIncrease = 1
+ghoulsIncrease = 1.35
 
 [node name="RoomManager3" parent="." instance=ExtResource( 3 )]
 level = ExtResource( 7 )
 numGhouls = 2
-ghoulsIncrease = 1
+ghoulsIncrease = 1.0
 numMaggots = 1
+maggotsIncrease = 0.5
 
 [node name="RoomManager4" parent="." instance=ExtResource( 3 )]
 level = ExtResource( 8 )
-maxWaves = 1
-numSkulls = 1
+numGhouls = 3
+ghoulsIncrease = 0.5
+numMaggots = 2
+maggotsIncrease = 1.0
 
 [node name="RoomManager5" parent="." instance=ExtResource( 3 )]
 level = ExtResource( 8 )

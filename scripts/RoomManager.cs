@@ -26,11 +26,11 @@ namespace Game
         [Export]
         private int numGhouls;
         [Export]
-        private int ghoulsIncrease;
+        private float ghoulsIncrease;
         [Export]
         private int numMaggots;
         [Export]
-        private int maggotsIncrease;
+        private float maggotsIncrease;
         [Export]
         private int numSkulls;
 
@@ -126,7 +126,7 @@ namespace Game
 
         private void SpawnEnemies()
         {
-            for (int i = 0; i < numGhouls + (ghoulsIncrease * (currentWave - 1)); i++)
+            for (int i = 0; i < Mathf.FloorToInt(numGhouls + (ghoulsIncrease * (currentWave - 1))); i++)
             {
                 var enemy = resourcePreloader.InstanceSceneOrNull<Ghoul>();
                 currentLevel.Entities.AddChild(enemy);
@@ -137,7 +137,7 @@ namespace Game
                 enemyCount++;
             }
 
-            for (int i = 0; i < numMaggots + (maggotsIncrease * (currentWave - 1)); i++)
+            for (int i = 0; i < Mathf.FloorToInt(numMaggots + (maggotsIncrease * (currentWave - 1))); i++)
             {
                 var enemy = resourcePreloader.InstanceSceneOrNull<Maggot>();
                 currentLevel.Entities.AddChild(enemy);
