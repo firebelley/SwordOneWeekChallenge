@@ -10,6 +10,10 @@ namespace Game.UI
         private Button playButton;
         [Node("%OptionsButton")]
         private Button optionsButton;
+        [Node("%TrainingButton")]
+        private Button trainingButton;
+        [Node("%QuitButton")]
+        private Button quitButton;
 
         public override void _Notification(int what)
         {
@@ -23,6 +27,13 @@ namespace Game.UI
         {
             playButton.Connect("pressed", this, nameof(OnPlayPressed));
             optionsButton.Connect("pressed", this, nameof(OnOptionsPressed));
+            trainingButton.Connect("pressed", this, nameof(OnTrainingPressed));
+            quitButton.Connect("pressed", this, nameof(OnQuitPressed));
+
+            if (OS.HasFeature("HTML5"))
+            {
+                quitButton.QueueFree();
+            }
         }
 
         private void OnPlayPressed()
@@ -35,6 +46,16 @@ namespace Game.UI
             var scene = GD.Load<PackedScene>("res://scenes/ui/OptionsMenu.tscn");
             await ScreenTransitionManager.DoTransition();
             AddChild(scene.Instance());
+        }
+
+        private void OnTrainingPressed()
+        {
+            ScreenTransitionManager.TransitionToScene("res://scenes/level/TrainingRoom.tscn");
+        }
+
+        private void OnQuitPressed()
+        {
+            GetTree().Quit();
         }
     }
 }

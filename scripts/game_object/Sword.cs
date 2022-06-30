@@ -54,6 +54,9 @@ namespace Game.GameObject
         [Node]
         private AudioStreamPlayer hitStreamPlayer2;
 
+        [Export]
+        private bool trainingMode;
+
         private Vector2 previousPosition;
 
         private const int TORQUE_COEFFICIENT = 800_000;
@@ -383,7 +386,10 @@ namespace Game.GameObject
             {
                 return;
             }
-            healthComponent.Damage(1);
+            if (!trainingMode)
+            {
+                healthComponent.Damage(1);
+            }
             animationPlayer.Play("iframes");
             hitThisFrame = true;
             hitStreamPlayer1.Play();

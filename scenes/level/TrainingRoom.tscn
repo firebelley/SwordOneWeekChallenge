@@ -1,0 +1,47 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://scenes/level/BaseLevel.tscn" type="PackedScene" id=1]
+[ext_resource path="res://resources/theme.tres" type="Theme" id=2]
+[ext_resource path="res://scenes/game_object/EnemySpawner.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/game_object/Ghoul.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scripts/level/TrainingRoom.cs" type="Script" id=5]
+
+[node name="BaseLevel" instance=ExtResource( 1 )]
+script = ExtResource( 5 )
+
+[node name="MarginContainer" type="MarginContainer" parent="Navigation2D" index="1"]
+margin_left = -304.0
+margin_top = -160.0
+margin_right = 304.0
+margin_bottom = 160.0
+mouse_filter = 2
+theme = ExtResource( 2 )
+
+[node name="Instructions" type="Label" parent="Navigation2D/MarginContainer" index="0"]
+margin_left = 16.0
+margin_top = 16.0
+margin_right = 134.0
+margin_bottom = 89.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+text = "LMB - Attack
+RMB (Hold) - Fly
+Shift - Dash
+ESC/P - Pause Menu"
+
+[node name="Notes" type="Label" parent="Navigation2D/MarginContainer" index="1"]
+margin_left = 16.0
+margin_top = 269.0
+margin_right = 140.0
+margin_bottom = 304.0
+size_flags_horizontal = 0
+size_flags_vertical = 8
+text = "You are invulnerable
+while dashing."
+
+[node name="EnemySpawner" parent="Navigation2D/Entities" index="0" instance=ExtResource( 3 )]
+position = Vector2( 192, -64 )
+enemyScene = ExtResource( 4 )
+
+[node name="Sword" parent="." index="4"]
+trainingMode = true

@@ -12,9 +12,9 @@ namespace Game.Level
         public List<Vector2> FreeTiles { get; private set; } = new();
 
         [Node("%TileMap")]
-        private TileMap tileMap;
+        protected TileMap tileMap;
         [Node("%Entities")]
-        public Node2D Entities { get; private set; }
+        public Node2D Entities;
 
         public override void _Notification(int what)
         {
