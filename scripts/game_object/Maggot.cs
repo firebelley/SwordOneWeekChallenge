@@ -187,7 +187,8 @@ namespace Game.GameObject
 
         private void StateAttack()
         {
-            stateMachine.ChangeState(StateNormal);
+            blackboardComponent.SetValue(Constants.V_KNOCKBACK_DIRECTION, -(blackboardComponent.GetPrimitiveValue<Vector2>(Constants.V_ATTACK_DIRECTION) ?? Vector2.Right));
+            stateMachine.ChangeState(StateKnockback);
         }
 
         private void LeaveStateAttack()
