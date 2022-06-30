@@ -101,8 +101,15 @@ namespace Game
 
         private void OnRoomComplete()
         {
-            runConfig.Level++;
-            ShowLevelSelector();
+            if (runConfig.Level == 4)
+            {
+                GetTree().ChangeScene("res://scenes/ui/GameComplete.tscn");
+            }
+            else
+            {
+                runConfig.Level++;
+                ShowLevelSelector();
+            }
         }
 
         private void OnRoomFailed()
