@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://scripts/RunManager.cs" type="Script" id=1]
 [ext_resource path="res://scenes/ui/LevelSelector.tscn" type="PackedScene" id=2]
@@ -8,6 +8,7 @@
 [ext_resource path="res://scenes/level/Level2.tscn" type="PackedScene" id=6]
 [ext_resource path="res://scenes/level/Level3.tscn" type="PackedScene" id=7]
 [ext_resource path="res://scenes/level/Level5.tscn" type="PackedScene" id=8]
+[ext_resource path="res://scenes/level/Level4.tscn" type="PackedScene" id=9]
 
 [node name="RunManager" type="Node"]
 script = ExtResource( 1 )
@@ -33,7 +34,7 @@ numMaggots = 1
 maggotsIncrease = 0.5
 
 [node name="RoomManager4" parent="." instance=ExtResource( 3 )]
-level = ExtResource( 8 )
+level = ExtResource( 9 )
 numGhouls = 3
 ghoulsIncrease = 0.5
 numMaggots = 2
