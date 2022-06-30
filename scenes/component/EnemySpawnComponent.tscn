@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://scenes/effect/EnemySpawn.tscn" type="PackedScene" id=1]
+
+[node name="EnemySpawnComponent" type="Node2D"]
+
+[node name="EnemySpawn" parent="." instance=ExtResource( 1 )]

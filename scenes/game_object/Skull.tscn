@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=2]
+[gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://scenes/effect/EnemyDeathExplosion.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scenes/game_object/Ghoul.tscn" type="PackedScene" id=2]
@@ -17,6 +17,38 @@
 [ext_resource path="res://assets/art/skull.png" type="Texture" id=15]
 [ext_resource path="res://assets/art/ui/bar.png" type="Texture" id=16]
 [ext_resource path="res://scenes/component/RandomTimerComponent.tscn" type="PackedScene" id=17]
+[ext_resource path="res://scenes/component/EnemySpawnComponent.tscn" type="PackedScene" id=18]
+
+[sub_resource type="Animation" id=7]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=8]
+resource_name = "default"
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.15, 0.3, 0.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 1.25, 1.25 ), Vector2( 0.9, 0.9 ), Vector2( 1, 1 ) ]
+}
 
 [sub_resource type="Animation" id=6]
 length = 0.001
@@ -88,15 +120,20 @@ margin_right = 1.0
 margin_top = 1.0
 margin_bottom = 1.0
 
-[sub_resource type="CircleShape2D" id=7]
+[sub_resource type="CircleShape2D" id=9]
 radius = 15.0
 
-[sub_resource type="CircleShape2D" id=8]
+[sub_resource type="CircleShape2D" id=10]
 radius = 20.0
 
 [node name="Skull" type="KinematicBody2D"]
 collision_layer = 0
 script = ExtResource( 13 )
+
+[node name="SpawnAnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "default"
+anims/RESET = SubResource( 7 )
+anims/default = SubResource( 8 )
 
 [node name="BlinkAnimationPlayer" type="AnimationPlayer" parent="."]
 anims/RESET = SubResource( 6 )
@@ -190,17 +227,20 @@ margin_right = 57.0
 margin_bottom = 3.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource( 7 )
+shape = SubResource( 9 )
 
 [node name="Sprite" type="Sprite" parent="."]
 texture = ExtResource( 15 )
+
+[node name="EnemySpawnComponent" parent="." instance=ExtResource( 18 )]
+scale = Vector2( 2, 2 )
 
 [node name="PlayerLineOfSightComponent" parent="." instance=ExtResource( 8 )]
 
 [node name="HurtboxComponent" parent="." instance=ExtResource( 7 )]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
-shape = SubResource( 8 )
+shape = SubResource( 10 )
 
 [node name="EyeLeftPosition" type="Position2D" parent="."]
 position = Vector2( -6, -2 )
