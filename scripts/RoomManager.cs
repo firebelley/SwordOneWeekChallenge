@@ -41,6 +41,8 @@ namespace Game
         [Node]
         private Timer waveIntervalTimer;
         [Node]
+        private Timer deathTimer;
+        [Node]
         private ScreenBanner incomingScreenBanner;
         [Node]
         private ScreenBanner completeScreenBanner;
@@ -66,6 +68,7 @@ namespace Game
             waveTimer.Connect("timeout", this, nameof(OnWaveTimerTimeout));
             endTimer.Connect("timeout", this, nameof(OnEndTimerTimeout));
             waveIntervalTimer.Connect("timeout", this, nameof(OnWaveIntervalTimerTimeout));
+            deathTimer.Connect("timeout", this, nameof(OnDeathTimeout));
         }
 
         public void Reset()
@@ -78,6 +81,19 @@ namespace Game
         {
             BeginNewLevel();
             SetupSword(runConfig);
+        }
+
+        public void FailRoom()
+        {
+            waveTimer.Stop();
+            endTimer.Stop();
+            waveIntervalTimer.Stop();
+            deathTimer.Stop();
+            incomingScreenBanner.Stop();
+            completeScreenBanner.Stop();
+            deadScreenBanner.Stop();
+            currentLevel.QueueFree();
+            EmitSignal(nameof(RoomFailed));
         }
 
         private void BeginNewLevel()
@@ -169,7 +185,7 @@ namespace Game
         private void OnSwordDied()
         {
             deadScreenBanner.Play();
-            GetTree().CreateTimer(3.5f).Connect("timeout", this, nameof(OnDeathTimeout));
+            deathTimer.Start();
         }
 
         private void OnHealthChanged(int newHealth)
@@ -192,8 +208,7 @@ namespace Game
         private async void OnDeathTimeout()
         {
             await ScreenTransitionManager.DoTransition();
-            currentLevel.QueueFree();
-            EmitSignal(nameof(RoomFailed));
+            FailRoom();
         }
     }
 }

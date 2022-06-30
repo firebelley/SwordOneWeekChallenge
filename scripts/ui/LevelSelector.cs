@@ -29,11 +29,11 @@ namespace Game.UI
 
         public void SetupData(RunConfig runConfig)
         {
-            for (int i = RunConfig.MAX_LEVEL - 1; i >= 0; i--)
+            for (int i = 0; i < RunConfig.MAX_LEVEL; i++)
             {
-                var button = resourcePreloader.InstanceSceneOrNull<Button>("LevelSelectButton");
+                var button = resourcePreloader.InstanceSceneOrNull<AnimatedButton>();
                 buttonContainer.AddChild(button);
-                button.Text = $"{i + 1}";
+                button.Text = $"Level {i + 1}";
                 button.Connect("pressed", this, nameof(OnButtonPressed), new Godot.Collections.Array { i });
                 if (i > runConfig.Level)
                 {

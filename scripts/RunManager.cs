@@ -15,6 +15,7 @@ namespace Game
         private RunConfig runConfig;
 
         private List<RoomManager> roomManagers = new();
+        private RoomManager currentRoom;
 
         public override void _Notification(int what)
         {
@@ -46,7 +47,13 @@ namespace Game
             if (evt.IsActionPressed("pause"))
             {
                 GetTree().SetInputAsHandled();
-                AddChild(GD.Load<PackedScene>("res://scenes/ui/PauseMenu.tscn").Instance());
+                var pauseMenu = GD.Load<PackedScene>("res://scenes/ui/PauseMenu.tscn").InstanceOrNull<PauseMenu>();
+                AddChild(pauseMenu);
+                pauseMenu.Connect(nameof(PauseMenu.LevelSelectPressed), this, nameof(OnLevelSelectPressed));
+                if (!IsInstanceValid(currentRoom))
+                {
+                    pauseMenu.HideLevelSelect();
+                }
             }
         }
 
@@ -64,6 +71,7 @@ namespace Game
                 roomManager.Reset();
             }
 
+            currentRoom = null;
             ClearNodes();
             runConfig.CurrentHealth = runConfig.MaxHealth;
             var levelSelector = resourcePreloader.InstanceSceneOrNull<LevelSelector>();
@@ -88,6 +96,7 @@ namespace Game
             ClearNodes();
             var roomManager = roomManagers[roomIndex];
             roomManager.StartRoom(runConfig, new());
+            currentRoom = roomManager;
         }
 
         private void OnRoomComplete()
@@ -111,6 +120,14 @@ namespace Game
         private void OnSwordHealthChanged(int newHealth)
         {
             runConfig.CurrentHealth = newHealth;
+        }
+
+        private void OnLevelSelectPressed()
+        {
+            if (IsInstanceValid(currentRoom))
+            {
+                currentRoom.FailRoom();
+            }
         }
     }
 }

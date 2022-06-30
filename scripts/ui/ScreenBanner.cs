@@ -21,6 +21,10 @@ namespace Game.UI
         [Export]
         private bool useRedFont;
 
+        private SceneTreeTween backgroundTween;
+        private SceneTreeTween textTween;
+        private SceneTreeTween redTextTween;
+
         public override void _Notification(int what)
         {
             if (what == NotificationInstanced)
@@ -44,19 +48,19 @@ namespace Game.UI
         public void Play()
         {
             marginContainer.Visible = true;
-            var backgroundTween = colorRect.CreateTween();
+            backgroundTween = colorRect.CreateTween();
             colorRect.RectScale = new Vector2(1, 0);
             backgroundTween.TweenProperty(colorRect, "rect_scale", Vector2.One, .15f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
             backgroundTween.TweenInterval(2.70f);
             backgroundTween.TweenProperty(colorRect, "rect_scale", new Vector2(1, 0), .15f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
 
-            var textTween = label.CreateTween();
+            textTween = label.CreateTween();
             label.RectPosition = new Vector2(-label.RectSize.x, 0);
             textTween.TweenProperty(label, "rect_position", new Vector2(0, 0), .15f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
             textTween.TweenProperty(label, "rect_position", new Vector2(15, 0), 2.7f).SetTrans(Tween.TransitionType.Linear).SetEase(Tween.EaseType.InOut);
             textTween.TweenProperty(label, "rect_position", new Vector2(label.RectSize.x, 0), .15f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
 
-            var redTextTween = redLabel.CreateTween();
+            redTextTween = redLabel.CreateTween();
             redLabel.RectPosition = new Vector2(-redLabel.RectSize.x, 0);
             redTextTween.TweenProperty(redLabel, "rect_position", new Vector2(0, 0), .15f).SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
             redTextTween.TweenProperty(redLabel, "rect_position", new Vector2(15, 0), 2.7f).SetTrans(Tween.TransitionType.Linear).SetEase(Tween.EaseType.InOut);
@@ -69,6 +73,25 @@ namespace Game.UI
         public override void _Process(float delta)
         {
             colorRect.RectPivotOffset = colorRect.RectSize / 2f;
+        }
+
+        public void Stop()
+        {
+            if (backgroundTween?.IsValid() == true)
+            {
+                backgroundTween.CustomStep(10f);
+                backgroundTween.Kill();
+            }
+            if (textTween?.IsValid() == true)
+            {
+                textTween.CustomStep(10f);
+                textTween.Kill();
+            }
+            if (redTextTween?.IsValid() == true)
+            {
+                redTextTween.CustomStep(10f);
+                redTextTween.Kill();
+            }
         }
 
         private void OnTweenFinished()

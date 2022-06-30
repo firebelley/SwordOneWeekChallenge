@@ -6,10 +6,15 @@ namespace Game.UI
 {
     public class PauseMenu : CanvasLayer
     {
+        [Signal]
+        public delegate void LevelSelectPressed();
+
         [Node("%OptionsButton")]
         private Button optionsButton;
         [Node("%ResumeButton")]
         private Button resumeButton;
+        [Node("%LevelSelect")]
+        private Button levelSelectButton;
         [Node("%QuitButton")]
         private Button quitButton;
 
@@ -27,6 +32,7 @@ namespace Game.UI
             optionsButton.Connect("pressed", this, nameof(OnOptionsPressed));
             resumeButton.Connect("pressed", this, nameof(OnResumePressed));
             quitButton.Connect("pressed", this, nameof(OnQuitPressed));
+            levelSelectButton.Connect("pressed", this, nameof(OnLevelSelectPressed));
         }
 
         public override void _UnhandledInput(InputEvent evt)
@@ -46,6 +52,11 @@ namespace Game.UI
             }
         }
 
+        public void HideLevelSelect()
+        {
+            levelSelectButton.Visible = false;
+        }
+
         private async void OnOptionsPressed()
         {
             await ScreenTransitionManager.DoTransition();
@@ -63,6 +74,14 @@ namespace Game.UI
             await ScreenTransitionManager.DoTransition();
             GetTree().Paused = false;
             GetTree().ChangeScene("res://scenes/Main.tscn");
+        }
+
+        private async void OnLevelSelectPressed()
+        {
+            await ScreenTransitionManager.DoTransition();
+            EmitSignal(nameof(LevelSelectPressed));
+            GetTree().Paused = false;
+            QueueFree();
         }
     }
 }
