@@ -14,6 +14,8 @@ namespace Game.Component
         private RandomAudioStreamPlayerComponent randomAudioStreamPlayerComponent2;
         [Node]
         private RandomAudioStreamPlayerComponent randomAudioStreamPlayerComponent3;
+        [Node]
+        private RandomAudioStreamPlayerComponent randomAudioStreamPlayerComponent4;
 
         public override void _Notification(int what)
         {
@@ -33,6 +35,7 @@ namespace Game.Component
             randomAudioStreamPlayerComponent.Play();
             randomAudioStreamPlayerComponent2.Play();
             randomAudioStreamPlayerComponent3.Play();
+            randomAudioStreamPlayerComponent4.Play();
         }
     }
 }
