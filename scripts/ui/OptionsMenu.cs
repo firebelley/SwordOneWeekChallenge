@@ -12,6 +12,10 @@ namespace Game
         private HSlider musicSlider;
         [Node("%BackButton")]
         private Button backButton;
+        [Node("%WindowButton")]
+        private Button windowButton;
+        [Node("%WindowContainer")]
+        private Control windowContainer;
 
         public override void _Notification(int what)
         {
@@ -29,6 +33,19 @@ namespace Game
             sfxSlider.Connect("value_changed", this, nameof(OnSfxChanged));
             musicSlider.Connect("value_changed", this, nameof(OnMusicChanged));
             backButton.Connect("pressed", this, nameof(OnBackButtonPressed));
+            windowButton.Connect("pressed", this, nameof(OnWindowButtonPressed));
+
+            UpdateText();
+
+            if (OS.HasFeature("HTML5"))
+            {
+                windowContainer.QueueFree();
+            }
+        }
+
+        private void UpdateText()
+        {
+            windowButton.Text = OS.WindowFullscreen ? "Fullscreen" : "Windowed";
         }
 
         private float GetBusVolume(string busName)
@@ -60,6 +77,12 @@ namespace Game
         {
             await ScreenTransitionManager.DoTransition();
             QueueFree();
+        }
+
+        private void OnWindowButtonPressed()
+        {
+            OS.WindowFullscreen = !OS.WindowFullscreen;
+            UpdateText();
         }
     }
 }
