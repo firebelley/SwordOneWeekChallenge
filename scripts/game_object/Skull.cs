@@ -56,6 +56,8 @@ namespace Game.GameObject
         private Timer deathTimer;
         [Node]
         private Timer deathIntervalTimer;
+        [Node]
+        private RandomAudioStreamPlayerComponent attackStreamPlayerComponent;
 
         private enum State
         {
@@ -223,6 +225,7 @@ namespace Game.GameObject
                         activeProjectiles.Add(projectile);
                     }
                 }
+                attackStreamPlayerComponent.Play();
                 bulletAttackTimer.Start();
                 currentBulletWaves++;
             }

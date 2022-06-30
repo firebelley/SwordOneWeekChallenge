@@ -41,6 +41,8 @@ namespace Game.GameObject
         private PlayerLineOfSightComponent playerLineOfSightComponent;
         [Node]
         private Sprite sprite;
+        [Node]
+        private RandomAudioStreamPlayerComponent attackStreamPlayerComponent;
 
         private enum State
         {
@@ -152,6 +154,7 @@ namespace Game.GameObject
             projectile.SetDirection((playerPos.Value - GlobalPosition).Normalized());
             GetParent().AddChild(projectile);
             projectile.GlobalPosition = GlobalPosition;
+            attackStreamPlayerComponent.Play();
         }
 
         private void StateAttack()

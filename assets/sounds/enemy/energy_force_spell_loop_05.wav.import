@@ -1,0 +1,23 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/energy_force_spell_loop_05.wav-9617d855f328f86e36af34ebff2d1430.sample"
+
+[deps]
+
+source_file="res://assets/sounds/enemy/energy_force_spell_loop_05.wav"
+dest_files=[ "res://.import/energy_force_spell_loop_05.wav-9617d855f328f86e36af34ebff2d1430.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

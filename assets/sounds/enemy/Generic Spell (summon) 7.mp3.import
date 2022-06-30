@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Generic Spell (summon) 7.mp3-fc8b5dd1f63b16a1137fa9d24a27c2f5.mp3str"
+
+[deps]
+
+source_file="res://assets/sounds/enemy/Generic Spell (summon) 7.mp3"
+dest_files=[ "res://.import/Generic Spell (summon) 7.mp3-fc8b5dd1f63b16a1137fa9d24a27c2f5.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0

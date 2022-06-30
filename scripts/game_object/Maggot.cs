@@ -43,6 +43,8 @@ namespace Game.GameObject
         private PlayerLineOfSightComponent playerLineOfSightComponent;
         [Node]
         private Sprite sprite;
+        [Node]
+        private RandomAudioStreamPlayerComponent attackStreamPlayerComponent;
 
         private enum State
         {
@@ -180,6 +182,7 @@ namespace Game.GameObject
             var laser = resourcePreloader.InstanceSceneOrNull<LaserAttack>();
             AddChild(laser);
             laser.SetDirection(blackboardComponent.GetPrimitiveValue<Vector2>(Constants.V_ATTACK_DIRECTION) ?? Vector2.Right);
+            attackStreamPlayerComponent.Play();
         }
 
         private void StateAttack()
