@@ -1,4 +1,5 @@
 using Game.Component;
+using Game.Effect;
 using Godot;
 using GodotUtilities;
 using GodotUtilities.Logic;
@@ -7,8 +8,6 @@ namespace Game.GameObject
 {
     public class Sword : RigidBody2D
     {
-        [Signal]
-        public delegate void DashTimerStarted(float time);
         [Signal]
         public delegate void DashEnded();
         [Signal]
@@ -151,7 +150,10 @@ namespace Game.GameObject
             dashTimer.Start();
             var direction = this.GetMouseDirection();
             ApplyCentralImpulse(direction * DASH_FORCE);
-            EmitSignal(nameof(DashTimerStarted), dashTimer.WaitTime);
+            var dashIndicator = resourcePreloader.InstanceSceneOrNull<DashIndicator>();
+            GetParent().AddChild(dashIndicator);
+            dashIndicator.SetSword(this);
+            dashIndicator.StartTimer(dashTimer.WaitTime);
 
             GravityScale = 0;
             LinearDamp = DASH_LINEAR_DAMP;
@@ -301,6 +303,8 @@ namespace Game.GameObject
         {
             AngularDamp = 5f;
             LinearDamp = 0f;
+            AppliedTorque = 0f;
+            AppliedForce = Vector2.Zero;
             ApplyTorqueImpulse(MathUtil.RNG.RandfRange(-2000f, 2000f));
         }
 
