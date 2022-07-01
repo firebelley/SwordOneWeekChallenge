@@ -21,6 +21,15 @@ namespace Game.UI
         [Export]
         private bool useRedFont;
 
+        public string Text
+        {
+            get => text;
+            set
+            {
+                text = value;
+            }
+        }
+
         private SceneTreeTween backgroundTween;
         private SceneTreeTween textTween;
         private SceneTreeTween redTextTween;
@@ -47,6 +56,7 @@ namespace Game.UI
 
         public void Play()
         {
+            label.Text = text;
             marginContainer.Visible = true;
             backgroundTween = colorRect.CreateTween();
             colorRect.RectScale = new Vector2(1, 0);

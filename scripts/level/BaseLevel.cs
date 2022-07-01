@@ -35,6 +35,12 @@ namespace Game.Level
         }
 
 
+        public Vector2 GetFreePosition()
+        {
+            var position = FreeTiles[MathUtil.RNG.RandiRange(0, FreeTiles.Count - 1)];
+            return (position * 16f) + (Vector2.One * 8f);
+        }
+
         private void RecordFreeTiles()
         {
             for (int x = -20; x < 20; x++)
