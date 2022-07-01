@@ -36,34 +36,7 @@ namespace Game.Autoload
             instance.AddChild(transition);
             var _ = transition.DoTransition();
             await instance.ToSignal(transition, nameof(Transition.TransitionedHalfway));
+            instance.GetTree().Paused = false;
         }
-
-        // public static async void TransitionToNode(string path)
-        // {
-        //     var transition = instance.resourcePreloader.InstanceSceneOrNull<Transition>();
-        //     instance.AddChild(transition);
-        //     await transition.DoTransitionIn();
-        //     foreach (var child in instance.nodeParent.GetChildren().Cast<Node>())
-        //     {
-        //         child.QueueFree();
-        //     }
-        //     var node = GD.Load<PackedScene>(path).Instance();
-        //     instance.nodeParent.AddChild(node);
-        //     await transition.DoTransitionOut();
-        //     transition.QueueFree();
-        // }
-
-        // public static async void TransitionClearNodes()
-        // {
-        //     var transition = instance.resourcePreloader.InstanceSceneOrNull<Transition>();
-        //     instance.AddChild(transition);
-        //     await transition.DoTransitionIn();
-        //     foreach (var child in instance.nodeParent.GetChildren().Cast<Node>())
-        //     {
-        //         child.QueueFree();
-        //     }
-        //     await transition.DoTransitionOut();
-        //     transition.QueueFree();
-        // }
     }
 }
