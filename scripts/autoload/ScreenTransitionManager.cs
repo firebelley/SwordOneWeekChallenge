@@ -7,11 +7,8 @@ namespace Game.Autoload
 {
     public class ScreenTransitionManager : Node
     {
-
         [Node]
         private ResourcePreloader resourcePreloader;
-        // [Node]
-        // private Node nodeParent;
 
         private static ScreenTransitionManager instance;
 
@@ -36,7 +33,6 @@ namespace Game.Autoload
             instance.AddChild(transition);
             var _ = transition.DoTransition();
             await instance.ToSignal(transition, nameof(Transition.TransitionedHalfway));
-            instance.GetTree().Paused = false;
         }
     }
 }

@@ -24,6 +24,10 @@ namespace Game.UI
             {
                 this.WireNodes();
             }
+            else if (what == NotificationExitTree)
+            {
+                GetTree().Paused = false;
+            }
         }
 
         public override void _Ready()
