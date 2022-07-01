@@ -13,6 +13,10 @@ config_version=4
 config/name="Slash Ghoul"
 run/main_scene="res://scenes/Main.tscn"
 config/use_custom_user_dir=true
+boot_splash/image="res://icon.png"
+boot_splash/fullsize=false
+boot_splash/use_filter=false
+boot_splash/bg_color=Color( 0.0196078, 0.00784314, 0.0313726, 1 )
 config/icon="res://icon.png"
 config/windows_native_icon="res://icon.ico"
 
@@ -22,6 +26,7 @@ Visuals="*res://scenes/autoload/Visuals.tscn"
 IntegerResolutionHandler="*res://addons/integer_resolution_handler/integer_resolution_handler.gd"
 HitstopManager="*res://scenes/autoload/HitstopManager.tscn"
 ScreenTransitionManager="*res://scenes/autoload/ScreenTransitionManager.tscn"
+MusicPlayer="*res://scenes/autoload/MusicPlayer.tscn"
 
 [debug]
 
