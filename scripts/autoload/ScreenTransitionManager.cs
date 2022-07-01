@@ -24,7 +24,7 @@ namespace Game.Autoload
             }
         }
 
-        public static async void TransitionToScene(string scenePath, bool skipIn = false)
+        public static async Task TransitionToScene(string scenePath, bool skipIn = false)
         {
             await DoTransition();
             instance.GetTree().ChangeScene(scenePath);

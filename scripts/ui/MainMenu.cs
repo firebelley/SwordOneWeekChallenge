@@ -14,6 +14,8 @@ namespace Game.UI
         private Button trainingButton;
         [Node("%QuitButton")]
         private Button quitButton;
+        [Node("%EndlessButton")]
+        private Button endlessButton;
 
         public override void _Notification(int what)
         {
@@ -29,6 +31,7 @@ namespace Game.UI
             optionsButton.Connect("pressed", this, nameof(OnOptionsPressed));
             trainingButton.Connect("pressed", this, nameof(OnTrainingPressed));
             quitButton.Connect("pressed", this, nameof(OnQuitPressed));
+            endlessButton.Connect("pressed", this, nameof(OnEndlessPressed));
 
             if (OS.HasFeature("HTML5"))
             {
@@ -56,6 +59,11 @@ namespace Game.UI
         private void OnQuitPressed()
         {
             GetTree().Quit();
+        }
+
+        private void OnEndlessPressed()
+        {
+            ScreenTransitionManager.TransitionToScene("res://scenes/level/EndlessLevel.tscn");
         }
     }
 }

@@ -2,17 +2,17 @@
 
 [ext_resource path="res://scenes/level/BaseLevel.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scripts/level/EndlessLevel.cs" type="Script" id=2]
-[ext_resource path="res://scripts/ui/ScreenBanner.cs" type="Script" id=3]
 [ext_resource path="res://scenes/game_object/Maggot.tscn" type="PackedScene" id=4]
 [ext_resource path="res://scenes/game_object/Skull.tscn" type="PackedScene" id=5]
 [ext_resource path="res://scenes/ui/ScreenBanner.tscn" type="PackedScene" id=6]
 [ext_resource path="res://scenes/game_object/Ghoul.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/ui/EndlessLevelOver.tscn" type="PackedScene" id=8]
 
 [node name="EndlessLevel" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
 
 [node name="ResourcePreloader" type="ResourcePreloader" parent="." index="5"]
-resources = [ PoolStringArray( "Ghoul", "Maggot", "Skull" ), [ ExtResource( 7 ), ExtResource( 4 ), ExtResource( 5 ) ] ]
+resources = [ PoolStringArray( "EndlessLevelOver", "Ghoul", "Maggot", "Skull" ), [ ExtResource( 8 ), ExtResource( 7 ), ExtResource( 4 ), ExtResource( 5 ) ] ]
 
 [node name="WaveIntervalTimer" type="Timer" parent="." index="6"]
 wait_time = 0.5
@@ -22,12 +22,10 @@ one_shot = true
 wait_time = 3.5
 one_shot = true
 
-[node name="IncomingScreenBanner" type="CanvasLayer" parent="." index="8" instance=ExtResource( 6 )]
-script = ExtResource( 3 )
+[node name="IncomingScreenBanner" parent="." index="8" instance=ExtResource( 6 )]
 text = "GHOULS INCOMING"
 
-[node name="DeadScreenBanner" type="CanvasLayer" parent="." index="9" instance=ExtResource( 6 )]
-script = ExtResource( 3 )
+[node name="DeadScreenBanner" parent="." index="9" instance=ExtResource( 6 )]
 text = "YOU DIED"
 backgroundColor = Color( 0.92549, 0.152941, 0.247059, 0.588235 )
 useRedFont = true

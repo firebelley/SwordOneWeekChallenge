@@ -1,3 +1,4 @@
+using Game.Autoload;
 using Game.Component;
 using Game.GameObject;
 using Game.UI;
@@ -35,6 +36,18 @@ namespace Game.Level
             if (what == NotificationInstanced)
             {
                 this.WireNodes();
+            }
+        }
+
+        public override void _UnhandledInput(InputEvent evt)
+        {
+            base._UnhandledInput(evt);
+            if (evt.IsActionPressed("pause"))
+            {
+                GetTree().SetInputAsHandled();
+                var pauseMenu = GD.Load<PackedScene>("res://scenes/ui/PauseMenu.tscn").InstanceOrNull<PauseMenu>();
+                AddChild(pauseMenu);
+                pauseMenu.HideLevelSelect();
             }
         }
 
@@ -115,9 +128,13 @@ namespace Game.Level
             }
         }
 
-        private void OnDeathTimerTimeout()
+        private async void OnDeathTimerTimeout()
         {
-            //transition
+            await ScreenTransitionManager.DoTransition();
+            var completed = resourcePreloader.InstanceSceneOrNull<EndlessLevelOver>();
+            completed.WaveNumber = currentWave;
+            GetParent().AddChild(completed);
+            QueueFree();
         }
 
         private void OnSwordDied()
