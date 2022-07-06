@@ -375,7 +375,7 @@ namespace Game.GameObject
 
         private void OnVelocityUpdated(Vector2 velocity)
         {
-            if (stateMachine.GetCurrentState() == State.Normal)
+            if (stateMachine.GetCurrentState() == State.Normal && velocity.LengthSquared() > 10)
             {
                 velocityComponent.SetVelocity(velocity);
             }
